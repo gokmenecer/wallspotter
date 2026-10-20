@@ -1,0 +1,22 @@
+{
+  "site_name": "WallSpotter",
+  "tagline": "Lets Share Everything",
+  "description": "Free mobile and desktop wallpapers, hand-picked and shared by WallSpotter.",
+  "base_url": "https://gokmenecer.github.io",
+  "path_prefix": "/wallspotter",
+  "custom_domain": "www.wallspotter.com",
+  "web3forms_key": "",
+  "adsense_client": "",
+  "google_analytics": [],
+  "social": {
+    "Pinterest": "https://www.pinterest.com/kafamsal/",
+    "X": "https://www.x.com/kafamsal",
+    "Facebook": "https://www.facebook.com/kafamsal"
+  },
+  "redirects": {
+    "/contact-us/": "/363-2/contact-us/",
+    "/contact/": "/363-2/contact-us/",
+    "/363-2/": "/",
+    "/author/kafamsal/": "/"
+  }
+}
