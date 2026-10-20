@@ -342,7 +342,7 @@ def build():
   </div>
 </article>
 {preview_dialog}
-<h2 class="section-title">More {cat['name'].lower()}</h2>
+<h2 class="section-title">{'More from ' + cat['name'] if w['category'] == 'originals' else 'More ' + cat['name'].lower()}</h2>
 {grid(related)}
 <script>(function(){{var a=document.getElementById('dl');if(!a||a.href===a.dataset.fallback)return;var i=new Image();i.onerror=function(){{a.href=a.dataset.fallback}};i.src=a.href;}})();</script>"""
         meta_desc = w.get("description") or f"{w['title']} — free download from {CFG['site_name']}."
