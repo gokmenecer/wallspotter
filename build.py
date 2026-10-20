@@ -86,6 +86,10 @@ def head_tags(title, desc, path, image=None):
     if CFG.get("adsense_client"):
         ads = (f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={CFG["adsense_client"]}" '
                f'crossorigin="anonymous"></script>')
+    cf = ""
+    if CFG.get("cloudflare_analytics_token"):
+        cf = ("<script defer src=\"https://static.cloudflareinsights.com/beacon.min.js\" "
+              f"data-cf-beacon='{{\"token\": \"{CFG['cloudflare_analytics_token']}\"}}'></script>")
     return f"""<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(full_title)}</title>
@@ -104,7 +108,8 @@ def head_tags(title, desc, path, image=None):
 <link rel="preconnect" href="https://i.pinimg.com">
 <link rel="stylesheet" href="/assets/style.css">
 {ga_tags}
-{ads}"""
+{ads}
+{cf}"""
 
 
 def nav(active=""):
