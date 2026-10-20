@@ -185,8 +185,18 @@ def card(w, eager=False):
             f'alt="{esc(w["title"])}" loading="{loading}" decoding="async">{cap}</a>')
 
 
-def grid(items):
-    return '<div class="grid">' + "".join(card(w, i < 6) for i, w in enumerate(items)) + "</div>"
+def grid(items, wide_title="Desktop wallpapers"):
+    """Portrait wallpapers in a masonry grid; landscape ones in their own wide grid below."""
+    tall = [w for w in items if not w.get("wide")]
+    wide = [w for w in items if w.get("wide")]
+    out = ""
+    if tall:
+        out += '<div class="grid">' + "".join(card(w, i < 6) for i, w in enumerate(tall)) + "</div>"
+    if wide:
+        if tall and wide_title:
+            out += f'<h3 class="sub-title">{esc(wide_title)}</h3>'
+        out += '<div class="grid-wide">' + "".join(card(w, not tall and i < 3) for i, w in enumerate(wide)) + "</div>"
+    return out
 
 
 def write(path, content):
