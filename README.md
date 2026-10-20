@@ -23,7 +23,7 @@ Source of [www.wallspotter.com](https://www.wallspotter.com). The site is genera
 
 ## Adding an original (your own) wallpaper
 
-1. Save the image as a JPEG (1440 × 3200, quality ~88, sRGB), name it like `my-wallpaper-name.jpg`.
+1. Save the image as a JPEG — phone: 1440 × 3200, desktop: 3840 × 2160 (quality ~86, sRGB) — name it like `my-wallpaper-name.jpg`. Desktop (landscape) originals are detected automatically and also appear under Desktop.
 2. Upload it to `static/assets/originals/` (GitHub: open the folder → **Add file → Upload files**).
 3. Add a line to `data/wallpapers.csv` under the header:
 

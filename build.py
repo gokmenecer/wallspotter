@@ -64,6 +64,16 @@ def load_wallpapers():
                     # no hand-made thumbnail: one is generated at build time
                     r["thumb"] = r["thumb2x"] = f"/assets/thumbs/{Path(r['image']).stem}.jpg"
                     r["_make_thumb"] = True
+                    try:
+                        from PIL import Image
+                        with Image.open(ROOT / "static" / r["image"].lstrip("/")) as im:
+                            r["wide"] = im.width > im.height
+                    except ImportError:
+                        pass
+                    if r.get("wide"):
+                        # big desktop originals: show a lighter 1920px copy on the page, keep the full file for download
+                        r["large"] = f"/assets/thumbs/{Path(r['image']).stem}-1920.jpg"
+            r["wide"] = r.get("wide") or r["category"] == "desktop"
             rows.append(r)
     slugs = [r["slug"] for r in rows]
     dupes = {s for s in slugs if slugs.count(s) > 1}
@@ -168,7 +178,7 @@ def page(title, desc, path, body, active="", image=None, extra_head=""):
 def card(w, eager=False):
     loading = "eager" if eager else "lazy"
     srcset = f' srcset="{esc(w["thumb"])} 1x, {esc(w["thumb2x"])} 2x"' if w["thumb"] != w["thumb2x"] else ""
-    cls = "card" + (" wide" if w["category"] == "desktop" else "")
+    cls = "card" + (" wide" if w.get("wide") else "")
     cap = (f'<span class="card-cap">{esc(w["title"])}</span>'
            if w["title"] != CATEGORIES[w["category"]]["single"] else "")
     return (f'<a class="{cls}" href="{w["url"]}"><img src="{esc(w["thumb"])}"{srcset} '
@@ -208,7 +218,12 @@ def make_thumbs(walls, width=480):
         dst.parent.mkdir(parents=True, exist_ok=True)
         with Image.open(src) as im:
             im = im.convert("RGB")
-            im.thumbnail((width, width * 4), Image.LANCZOS)
+            if w.get("wide"):
+                big = im.copy()
+                big.thumbnail((1920, 1920), Image.LANCZOS)
+                big.save(OUT / w["large"].lstrip("/"), "JPEG", quality=84, optimize=True, progressive=True)
+            tw = width * 2 if w.get("wide") else width
+            im.thumbnail((tw, tw * 4), Image.LANCZOS)
             im.save(dst, "JPEG", quality=82, optimize=True, progressive=True)
 
 
@@ -229,7 +244,7 @@ def build():
         originals_block = (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
                            f'<a href="/originals/">See all &rarr;</a></div>'
                            f'<p class="count">Wallpapers designed by us — free to download.</p>{grid(originals[:10])}')
-    show = originals[:8] or walls[:6]
+    show = [w for w in originals if not w.get("wide")][:8] or walls[:6]
     slides = "".join(f'<img src="{esc(w["thumb2x"])}" alt="" {"class=\"on\" " if i == 0 else ""}loading="{"eager" if i < 2 else "lazy"}">'
                      for i, w in enumerate(show))
     showcase = f"""<a class="showcase" href="/originals/" aria-label="WallSpotter Originals">
@@ -247,7 +262,7 @@ def build():
 
     # Category pages
     for key, c in CATEGORIES.items():
-        items = [w for w in walls if w["category"] == key]
+        items = [w for w in walls if w["category"] == key or (key == "desktop" and w["category"] == "originals" and w.get("wide"))]
         if not items:
             continue
         lead = (" Original wallpapers designed by WallSpotter, free to download for personal use."
@@ -274,14 +289,14 @@ def build():
         desc_html = f'<p class="desc">{esc(w["description"])}</p>' if w.get("description") else ""
         if is_orig:
             button = (f'<a class="btn" href="{esc(w["full"])}" download="wallspotter-{w["slug"]}.jpg">Download</a>')
-            hint = "Free for personal use as a phone wallpaper. &copy; WallSpotter."
+            hint = (f"Free for personal use as a {'desktop' if w.get('wide') else 'phone'} wallpaper. &copy; WallSpotter.")
         else:
             button = (f'<a class="btn" id="dl" href="{esc(w["full"])}" data-fallback="{esc(w["large"])}" '
                       f'target="_blank" rel="noopener">Open full size</a>')
             hint = "Open the full-size image, then press and hold (phone) or right-click (computer) to save it."
         preview_btn = ""
         preview_dialog = ""
-        if w["category"] != "desktop":
+        if not w.get("wide"):
             preview_btn = '<button class="btn ghost" type="button" data-preview>Preview on lock screen</button>'
             preview_dialog = f"""<dialog class="preview" id="preview" aria-label="Lock screen preview">
   <div class="phone phone-lg"><div class="screen"><img class="on" src="{esc(w['large'])}" alt="{esc(w['title'])} on a phone lock screen"></div>
@@ -294,7 +309,7 @@ def build():
             pager += f'<a href="{newer["url"]}">&larr; Newer</a>'
         if older:
             pager += f'<a href="{older["url"]}">Older &rarr;</a>'
-        body = f"""<article class="single {'is-wide' if w['category'] == 'desktop' else ''}">
+        body = f"""<article class="single {'is-wide' if w.get('wide') else ''}">
   <div class="single-img"><img src="{esc(w['large'])}" alt="{esc(w['title'])}" decoding="async"></div>
   <div class="single-info">
     <p class="crumb"><a href="/{cat['slug']}/">{cat['name']}</a></p>
