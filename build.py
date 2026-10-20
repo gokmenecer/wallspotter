@@ -4,7 +4,7 @@
 Reads data/wallpapers.csv and pages/*.html, writes the finished site to _site/.
 Run `python3 build.py`. Pillow (pip install pillow) is used to make thumbnails for wallpapers stored in the repo.
 """
-import csv, html, json, re, shutil
+import csv, hashlib, html, json, re, shutil
 from datetime import date
 from pathlib import Path
 
@@ -13,6 +13,8 @@ OUT = ROOT / "_site"
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 PREFIX = CFG.get("path_prefix", "").rstrip("/")
 BASE = CFG["base_url"].rstrip("/") + PREFIX
+# changes whenever style.css changes, so browsers fetch the new version instead of a cached one
+CSS_VER = hashlib.md5((ROOT / "static" / "assets" / "style.css").read_bytes()).hexdigest()[:8]
 
 
 def with_prefix(text):
@@ -111,7 +113,7 @@ def head_tags(title, desc, path, image=None):
 <link rel="icon" href="/assets/img/favicon.png">
 <link rel="apple-touch-icon" href="/assets/img/favicon.png">
 <link rel="preconnect" href="https://i.pinimg.com">
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/style.css?v={CSS_VER}">
 {ga_tags}
 {ads}
 {cf}"""
