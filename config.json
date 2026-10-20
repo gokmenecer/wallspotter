@@ -20,5 +20,6 @@
     "/contact/": "/363-2/contact-us/",
     "/363-2/": "/",
     "/author/kafamsal/": "/"
-  }
+  },
+  "likes_api": "https://wallspotter-likes.gokmenecer.workers.dev"
 }

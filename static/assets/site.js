@@ -40,6 +40,63 @@
     }, 3500);
   }
 
+  // Likes (counts live in a small Cloudflare Worker; this browser remembers what it liked)
+  var api = document.body.getAttribute('data-likes-api');
+  if (api) {
+    var KEY = 'ws-liked';
+    var liked = {};
+    try { liked = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+    var save = function () { try { localStorage.setItem(KEY, JSON.stringify(liked)); } catch (e) {} };
+    var fmt = function (n) { return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k' : String(n); };
+
+    var btn = document.querySelector('[data-like]');
+    var cardEls = Array.prototype.slice.call(document.querySelectorAll('.card[data-id]'));
+    var ids = cardEls.map(function (c) { return c.getAttribute('data-id'); });
+    if (btn) ids.unshift(btn.getAttribute('data-like'));
+    ids = ids.filter(function (v, i, a) { return a.indexOf(v) === i; });
+
+    var paint = function (counts) {
+      cardEls.forEach(function (c) {
+        var n = counts[c.getAttribute('data-id')];
+        if (n > 0 && !c.querySelector('.card-likes')) {
+          var s = document.createElement('span');
+          s.className = 'card-likes';
+          s.textContent = '\u2665 ' + fmt(n);
+          c.appendChild(s);
+        }
+      });
+      if (btn) setBtn(counts[btn.getAttribute('data-like')] || 0);
+    };
+    var setBtn = function (n) {
+      var on = !!liked[btn.getAttribute('data-like')];
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.querySelector('[data-count]').textContent = n > 0 ? fmt(n) : 'Like';
+      btn.dataset.n = n;
+    };
+
+    for (var i = 0; i < ids.length; i += 60) {
+      fetch(api + '/likes?ids=' + ids.slice(i, i + 60).join(','))
+        .then(function (r) { return r.json(); }).then(paint).catch(function () {});
+    }
+
+    if (btn) {
+      setBtn(0);
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-like');
+        var on = !liked[id];
+        var n = Math.max(0, (parseInt(btn.dataset.n, 10) || 0) + (on ? 1 : -1));
+        if (on) { liked[id] = 1; } else { delete liked[id]; }
+        save(); setBtn(n);
+        btn.classList.remove('pop'); void btn.offsetWidth; if (on) btn.classList.add('pop');
+        fetch(api + '/like', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id, action: on ? 'like' : 'unlike' }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { if (typeof d.count === 'number') setBtn(d.count); })
+          .catch(function () {});
+      });
+    }
+  }
+
   // Lock-screen preview dialog
   var dlg = document.getElementById('preview');
   var openBtn = document.querySelector('[data-preview]');

@@ -162,7 +162,7 @@ def page(title, desc, path, body, active="", image=None, extra_head=""):
 {head_tags(title, desc, path, image)}
 {extra_head}
 </head>
-<body>
+<body{f' data-likes-api="{esc(CFG["likes_api"])}"' if CFG.get("likes_api") else ""}>
 <a class="rail rail-l" href="/mobile-wallpaper/" tabindex="-1">Mobile Wallpapers &middot; Phone &middot; 9:20</a>
 <a class="rail rail-r" href="/desktop-wallpaper/" tabindex="-1">Desktop Wallpapers &middot; PC &middot; 16:9</a>
 {nav(active)}
@@ -181,7 +181,7 @@ def card(w, eager=False):
     cls = "card" + (" wide" if w.get("wide") else "")
     cap = (f'<span class="card-cap">{esc(w["title"])}</span>'
            if w["title"] != CATEGORIES[w["category"]]["single"] else "")
-    return (f'<a class="{cls}" href="{w["url"]}"><img src="{esc(w["thumb"])}"{srcset} '
+    return (f'<a class="{cls}" href="{w["url"]}" data-id="{w["slug"]}"><img src="{esc(w["thumb"])}"{srcset} '
             f'alt="{esc(w["title"])}" loading="{loading}" decoding="async">{cap}</a>')
 
 
@@ -304,6 +304,11 @@ def build():
             button = (f'<a class="btn" id="dl" href="{esc(w["full"])}" data-fallback="{esc(w["large"])}" '
                       f'target="_blank" rel="noopener">Open full size</a>')
             hint = "Open the full-size image, then press and hold (phone) or right-click (computer) to save it."
+        like_btn = ""
+        if CFG.get("likes_api"):
+            like_btn = (f'<button class="like-btn" type="button" data-like="{w["slug"]}" aria-pressed="false" aria-label="Like this wallpaper">'
+                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 5 6.4 5c2 0 3.6 1.1 4.6 2.6C12 6.1 13.6 5 15.6 5 19 5 21.1 8.4 19.6 11.8 17.5 16.4 12 21 12 21z"/></svg>'
+                        '<span data-count></span></button>')
         preview_btn = ""
         preview_dialog = ""
         if not w.get("wide"):
@@ -328,6 +333,7 @@ def build():
     {desc_html}
     <div class="actions">
       {button}
+      {like_btn}
       {preview_btn}
       {pin}
     </div>

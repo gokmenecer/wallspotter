@@ -127,6 +127,21 @@ h1.section-title { font-size: clamp(26px, 4vw, 36px); margin-top: 32px; margin-b
   border: 0; background: var(--text); color: #000; font-size: 24px; line-height: 1; cursor: pointer;
 }
 @keyframes pop { from { transform: scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+.like-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 999px;
+  border: 1px solid var(--line); background: transparent; color: var(--text);
+  font: inherit; font-weight: 700; cursor: pointer; transition: border-color .2s ease, background .2s ease;
+}
+.like-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; transition: fill .2s ease, stroke .2s ease, transform .2s ease; }
+.like-btn:hover { border-color: var(--accent); }
+.like-btn[aria-pressed="true"] { border-color: var(--accent); background: rgba(255,79,109,.12); }
+.like-btn[aria-pressed="true"] svg { fill: var(--accent); stroke: var(--accent); }
+.like-btn.pop svg { animation: heart .45s cubic-bezier(.2,.7,.2,1); }
+@keyframes heart { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.card-likes {
+  position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 99px;
+  background: rgba(0,0,0,.55); color: #fff; font-size: 12px; font-weight: 700; backdrop-filter: blur(4px);
+}
 button.btn { border: 1px solid var(--line); font: inherit; font-weight: 700; cursor: pointer; }
 
 /* single wallpaper */
