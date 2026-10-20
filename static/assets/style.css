@@ -41,6 +41,10 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 16px 48px; }
 .section-title { font-size: 20px; margin: 28px 0 14px; letter-spacing: -.01em; }
 h1.section-title { font-size: clamp(26px, 4vw, 36px); margin-top: 32px; margin-bottom: 2px; }
 .count { color: var(--muted); margin: 0 0 16px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.section-head a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 15px; white-space: nowrap; }
+.section-head + .count { margin-top: -8px; }
+.desc { color: #d3d5da; margin: 14px 0 0; max-width: 46ch; }
 
 /* masonry grid */
 .grid { columns: 5 200px; column-gap: 12px; }
@@ -118,6 +122,7 @@ time { color: var(--muted); font-size: 14px; }
   .single-info { position: static; }
   .top { flex-direction: column; align-items: flex-start; gap: 6px; }
   .brand img { height: 28px; }
-  .top nav a { padding: 6px 10px; font-size: 14px; }
+  .top nav { gap: 0; flex-wrap: nowrap; }
+  .top nav a { padding: 6px 8px; font-size: 13.5px; }
 }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } }

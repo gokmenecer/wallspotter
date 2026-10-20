@@ -2,7 +2,7 @@
 """WallSpotter static site generator.
 
 Reads data/wallpapers.csv and pages/*.html, writes the finished site to _site/.
-No third-party packages needed: run `python3 build.py`.
+Run `python3 build.py`. Pillow (pip install pillow) is used to make thumbnails for wallpapers stored in the repo.
 """
 import csv, html, json, re, shutil
 from datetime import date
@@ -24,6 +24,7 @@ def with_prefix(text):
     return text.replace('url=/', f'url={PREFIX}/').replace('location.replace("/', f'location.replace("{PREFIX}/')
 
 CATEGORIES = {
+    "originals": {"slug": "originals", "name": "WallSpotter Originals", "single": "Original Wallpaper"},
     "mobile": {"slug": "mobile-wallpaper", "name": "Mobile Wallpapers", "single": "Mobile Wallpaper"},
     "desktop": {"slug": "desktop-wallpaper", "name": "Desktop Wallpapers", "single": "Desktop Wallpaper"},
 }
@@ -40,7 +41,7 @@ def load_wallpapers():
             if not r.get("slug") or not r.get("image"):
                 continue
             if r["category"] not in CATEGORIES:
-                raise SystemExit(f"Unknown category '{r['category']}' for {r['slug']} (use mobile or desktop)")
+                raise SystemExit(f"Unknown category '{r['category']}' for {r['slug']} (use originals, mobile or desktop)")
             r["title"] = r.get("title") or CATEGORIES[r["category"]]["single"]
             r["url"] = f"/{r['slug']}/"
             m = PIN_SIZE.match(r["image"])
@@ -56,6 +57,10 @@ def load_wallpapers():
                     if (ROOT / "static" / f"{stem}-{size}.jpg".lstrip("/")).exists():
                         r[size] = f"{stem}-{size}.jpg"
                 r["thumb2x"] = r["large"]
+                if r["thumb"] == r["image"] and r["image"].startswith("/"):
+                    # no hand-made thumbnail: one is generated at build time
+                    r["thumb"] = r["thumb2x"] = f"/assets/thumbs/{Path(r['image']).stem}.jpg"
+                    r["_make_thumb"] = True
             rows.append(r)
     slugs = [r["slug"] for r in rows]
     dupes = {s for s in slugs if slugs.count(s) > 1}
@@ -113,7 +118,7 @@ def head_tags(title, desc, path, image=None):
 
 
 def nav(active=""):
-    items = [("/", "Home", "home"), ("/mobile-wallpaper/", "Mobile", "mobile"),
+    items = [("/", "Home", "home"), ("/originals/", "Originals", "originals"), ("/mobile-wallpaper/", "Mobile", "mobile"),
              ("/desktop-wallpaper/", "Desktop", "desktop"), ("/about-us/", "About", "about")]
     links = "".join(f'<a href="{u}"{" aria-current=\"page\"" if k == active else ""}>{t}</a>' for u, t, k in items)
     return f"""<header class="top">
@@ -131,7 +136,7 @@ def footer():
     <a href="/terms-conditions/">Terms &amp; Conditions</a><a href="/sitemap/">Sitemap</a>
   </div>
   <div class="foot-social">{social}</div>
-  <p>&copy; {date.today().year} {esc(CFG['site_name'])}. Wallpapers are shared from our <a href="{esc(CFG['social'].get('Pinterest', '#'))}" rel="noopener">Pinterest boards</a>.</p>
+  <p>&copy; {date.today().year} {esc(CFG['site_name'])}. <a href="/originals/">Originals</a> are created by WallSpotter; other wallpapers are shared from our <a href="{esc(CFG['social'].get('Pinterest', '#'))}" rel="noopener">Pinterest boards</a>.</p>
 </footer>"""
 
 
@@ -182,27 +187,57 @@ def redirect(from_path, to_path):
 <body><a href="{to_path}">Continue</a></body></html>""")
 
 
+def make_thumbs(walls, width=480):
+    """Create small preview images for wallpapers stored in the repo (static/...)."""
+    todo = [w for w in walls if w.get("_make_thumb")]
+    if not todo:
+        return
+    from PIL import Image
+    for w in todo:
+        src = ROOT / "static" / w["image"].lstrip("/")
+        dst = OUT / w["thumb"].lstrip("/")
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with Image.open(src) as im:
+            im = im.convert("RGB")
+            im.thumbnail((width, width * 4), Image.LANCZOS)
+            im.save(dst, "JPEG", quality=82, optimize=True, progressive=True)
+
+
 # ---------- build ----------
 def build():
     if OUT.exists():
         shutil.rmtree(OUT)
     shutil.copytree(ROOT / "static", OUT)
     walls = load_wallpapers()
+    make_thumbs(walls)
     sitemap_urls = ["/"]
 
     # Home
     intro = (ROOT / "pages" / "_home-intro.html").read_text(encoding="utf-8")
+    originals = [w for w in walls if w["category"] == "originals"]
+    originals_block = ""
+    if originals:
+        originals_block = (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
+                           f'<a href="/originals/">See all &rarr;</a></div>'
+                           f'<p class="count">Wallpapers designed by us — free to download.</p>{grid(originals[:10])}')
     body = f"""<section class="hero"><h1>{esc(CFG['site_name'])}</h1><p>{esc(CFG['tagline'])} — free mobile and desktop wallpapers.</p></section>
+{originals_block}
 <h2 class="section-title">Latest wallpapers</h2>
-{grid(walls)}
+{grid([w for w in walls if w["category"] != "originals"])}
 <details class="about-box"><summary>About wallpapers</summary>{intro}</details>"""
     write("/", page("", CFG["description"], "/", body, "home"))
 
     # Category pages
     for key, c in CATEGORIES.items():
         items = [w for w in walls if w["category"] == key]
-        body = f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(items)} wallpapers</p>{grid(items)}'
-        write(f"/{c['slug']}/", page(c["name"], f"Free {c['name'].lower()} curated by {CFG['site_name']}.",
+        if not items:
+            continue
+        lead = (" Original wallpapers designed by WallSpotter, free to download for personal use."
+                if key == "originals" else "")
+        body = f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(items)} wallpapers.{lead}</p>{grid(items)}'
+        desc = (f"Original phone wallpapers designed by {CFG['site_name']}, free to download." if key == "originals"
+                else f"Free {c['name'].lower()} curated by {CFG['site_name']}.")
+        write(f"/{c['slug']}/", page(c["name"], desc,
                                     f"/{c['slug']}/", body, key))
         redirect(f"/category/{c['slug']}/", f"/{c['slug']}/")
         sitemap_urls.append(f"/{c['slug']}/")
@@ -217,6 +252,15 @@ def build():
         related = (same[start:] + same[:start])[:12]
         cat = CATEGORIES[w["category"]]
         pin = f'<a class="btn ghost" href="{esc(w["pin"])}" rel="noopener">View on Pinterest</a>' if w.get("pin") else ""
+        is_orig = w["category"] == "originals"
+        desc_html = f'<p class="desc">{esc(w["description"])}</p>' if w.get("description") else ""
+        if is_orig:
+            button = (f'<a class="btn" href="{esc(w["full"])}" download="wallspotter-{w["slug"]}.jpg">Download</a>')
+            hint = "Free for personal use as a phone wallpaper. &copy; WallSpotter."
+        else:
+            button = (f'<a class="btn" id="dl" href="{esc(w["full"])}" data-fallback="{esc(w["large"])}" '
+                      f'target="_blank" rel="noopener">Open full size</a>')
+            hint = "Open the full-size image, then press and hold (phone) or right-click (computer) to save it."
         pager = ""
         if newer:
             pager += f'<a href="{newer["url"]}">&larr; Newer</a>'
@@ -228,18 +272,20 @@ def build():
     <p class="crumb"><a href="/{cat['slug']}/">{cat['name']}</a></p>
     <h1>{esc(w['title'])}</h1>
     <time datetime="{w['date']}">{date.fromisoformat(w['date']).strftime('%d %B %Y')}</time>
+    {desc_html}
     <div class="actions">
-      <a class="btn" id="dl" href="{esc(w['full'])}" data-fallback="{esc(w['large'])}" target="_blank" rel="noopener">Open full size</a>
+      {button}
       {pin}
     </div>
-    <p class="hint">Open the full-size image, then press and hold (phone) or right-click (computer) to save it.</p>
+    <p class="hint">{hint}</p>
     <nav class="pager">{pager}</nav>
   </div>
 </article>
 <h2 class="section-title">More {cat['name'].lower()}</h2>
 {grid(related)}
-<script>(function(){{var a=document.getElementById('dl');if(a.href===a.dataset.fallback)return;var i=new Image();i.onerror=function(){{a.href=a.dataset.fallback}};i.src=a.href;}})();</script>"""
-        write(w["url"], page(w["title"], f"{w['title']} — free download from {CFG['site_name']}.", w["url"], body,
+<script>(function(){{var a=document.getElementById('dl');if(!a||a.href===a.dataset.fallback)return;var i=new Image();i.onerror=function(){{a.href=a.dataset.fallback}};i.src=a.href;}})();</script>"""
+        meta_desc = w.get("description") or f"{w['title']} — free download from {CFG['site_name']}."
+        write(w["url"], page(w["title"], meta_desc, w["url"], body,
                              w["category"], image=w["large"]))
         sitemap_urls.append(w["url"])
         redirect(f"{w['url']}amp/", w["url"])

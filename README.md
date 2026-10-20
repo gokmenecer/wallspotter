@@ -21,6 +21,18 @@ Source of [www.wallspotter.com](https://www.wallspotter.com). The site is genera
    Optional extra columns: `title` (defaults to "Mobile Wallpaper") and `pin` (link to the Pinterest pin, shows a "View on Pinterest" button). To use them, add them to the header line too.
 3. Click **Commit changes**. The site updates itself in about a minute.
 
+## Adding an original (your own) wallpaper
+
+1. Save the image as a JPEG (1440 × 3200, quality ~88, sRGB), name it like `my-wallpaper-name.jpg`.
+2. Upload it to `static/assets/originals/` (GitHub: open the folder → **Add file → Upload files**).
+3. Add a line to `data/wallpapers.csv` under the header:
+
+   ```
+   my-wallpaper-name,2026-10-21,originals,/assets/originals/my-wallpaper-name.jpg,My Wallpaper Name,"One or two sentences about the wallpaper."
+   ```
+
+   The thumbnail is created automatically when the site is published.
+
 ## Other files
 
 - `config.json` — site name, Google Analytics IDs and AdSense ID (both empty = none), Web3Forms contact key, social links, old-address redirects
