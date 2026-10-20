@@ -74,12 +74,14 @@ def load_wallpapers():
                         # big desktop originals: show a lighter 1920px copy on the page, keep the full file for download
                         r["large"] = f"/assets/thumbs/{Path(r['image']).stem}-1920.jpg"
             r["wide"] = r.get("wide") or r["category"] == "desktop"
+            r["_order"] = len(rows)  # position in the CSV: lines higher up are newer
             rows.append(r)
     slugs = [r["slug"] for r in rows]
     dupes = {s for s in slugs if slugs.count(s) > 1}
     if dupes:
         raise SystemExit(f"Duplicate slugs in wallpapers.csv: {', '.join(sorted(dupes))}")
-    rows.sort(key=lambda r: (r["date"], natural_key(r["slug"])), reverse=True)
+    # newest date first; on the same date, the line higher up in the CSV comes first
+    rows.sort(key=lambda r: (r["date"], -r["_order"]), reverse=True)
     return rows
 
 
@@ -287,10 +289,12 @@ def build():
 
     # Wallpaper pages
     for i, w in enumerate(walls):
-        same = [x for x in walls if x["category"] == w["category"] and x is not w]
-        idx = walls.index(w)
-        newer = walls[idx - 1] if idx > 0 else None
-        older = walls[idx + 1] if idx + 1 < len(walls) else None
+        # Newer / Older stay inside the same category and stop at its first / last wallpaper
+        section = [x for x in walls if x["category"] == w["category"]]
+        same = [x for x in section if x is not w]
+        idx = section.index(w)
+        newer = section[idx - 1] if idx > 0 else None
+        older = section[idx + 1] if idx + 1 < len(section) else None
         start = same.index(older) if older in same else 0
         related = (same[start:] + same[:start])[:12]
         cat = CATEGORIES[w["category"]]
