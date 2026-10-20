@@ -15,6 +15,7 @@ PREFIX = CFG.get("path_prefix", "").rstrip("/")
 BASE = CFG["base_url"].rstrip("/") + PREFIX
 # changes whenever style.css changes, so browsers fetch the new version instead of a cached one
 CSS_VER = hashlib.md5((ROOT / "static" / "assets" / "style.css").read_bytes()).hexdigest()[:8]
+JS_VER = hashlib.md5((ROOT / "static" / "assets" / "site.js").read_bytes()).hexdigest()[:8]
 
 
 def with_prefix(text):
@@ -114,6 +115,8 @@ def head_tags(title, desc, path, image=None):
 <link rel="apple-touch-icon" href="/assets/img/favicon.png">
 <link rel="preconnect" href="https://i.pinimg.com">
 <link rel="stylesheet" href="/assets/style.css?v={CSS_VER}">
+<script>document.documentElement.classList.add('js')</script>
+<script defer src="/assets/site.js?v={JS_VER}"></script>
 {ga_tags}
 {ads}
 {cf}"""
@@ -150,6 +153,8 @@ def page(title, desc, path, body, active="", image=None, extra_head=""):
 {extra_head}
 </head>
 <body>
+<a class="rail rail-l" href="/mobile-wallpaper/" tabindex="-1">Mobile Wallpapers &middot; Phone &middot; 9:20</a>
+<a class="rail rail-r" href="/desktop-wallpaper/" tabindex="-1">Desktop Wallpapers &middot; PC &middot; 16:9</a>
 {nav(active)}
 <main>
 {body}
@@ -164,8 +169,10 @@ def card(w, eager=False):
     loading = "eager" if eager else "lazy"
     srcset = f' srcset="{esc(w["thumb"])} 1x, {esc(w["thumb2x"])} 2x"' if w["thumb"] != w["thumb2x"] else ""
     cls = "card" + (" wide" if w["category"] == "desktop" else "")
+    cap = (f'<span class="card-cap">{esc(w["title"])}</span>'
+           if w["title"] != CATEGORIES[w["category"]]["single"] else "")
     return (f'<a class="{cls}" href="{w["url"]}"><img src="{esc(w["thumb"])}"{srcset} '
-            f'alt="{esc(w["title"])}" loading="{loading}" decoding="async"></a>')
+            f'alt="{esc(w["title"])}" loading="{loading}" decoding="async">{cap}</a>')
 
 
 def grid(items):
@@ -222,7 +229,16 @@ def build():
         originals_block = (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
                            f'<a href="/originals/">See all &rarr;</a></div>'
                            f'<p class="count">Wallpapers designed by us — free to download.</p>{grid(originals[:10])}')
-    body = f"""<section class="hero"><h1>{esc(CFG['site_name'])}</h1><p>{esc(CFG['tagline'])} — free mobile and desktop wallpapers.</p></section>
+    show = originals[:8] or walls[:6]
+    slides = "".join(f'<img src="{esc(w["thumb2x"])}" alt="" {"class=\"on\" " if i == 0 else ""}loading="{"eager" if i < 2 else "lazy"}">'
+                     for i, w in enumerate(show))
+    showcase = f"""<a class="showcase" href="/originals/" aria-label="WallSpotter Originals">
+  <div class="phone"><div class="screen">{slides}</div><span class="island"></span>
+  <span class="lock"><span class="lock-date" data-date></span><span class="lock-time" data-time>9:41</span></span></div>
+</a>"""
+    body = f"""<section class="hero hero-split"><div class="hero-text"><h1>{esc(CFG['site_name'])}</h1><p>{esc(CFG['tagline'])} — free mobile and desktop wallpapers.</p>
+<p class="hero-links"><a class="btn" href="/originals/">Explore Originals</a><a class="btn ghost" href="/mobile-wallpaper/">Mobile</a><a class="btn ghost" href="/desktop-wallpaper/">Desktop</a></p></div>
+{showcase}</section>
 {originals_block}
 <h2 class="section-title">Latest wallpapers</h2>
 {grid([w for w in walls if w["category"] != "originals"])}
@@ -263,6 +279,16 @@ def build():
             button = (f'<a class="btn" id="dl" href="{esc(w["full"])}" data-fallback="{esc(w["large"])}" '
                       f'target="_blank" rel="noopener">Open full size</a>')
             hint = "Open the full-size image, then press and hold (phone) or right-click (computer) to save it."
+        preview_btn = ""
+        preview_dialog = ""
+        if w["category"] != "desktop":
+            preview_btn = '<button class="btn ghost" type="button" data-preview>Preview on lock screen</button>'
+            preview_dialog = f"""<dialog class="preview" id="preview" aria-label="Lock screen preview">
+  <div class="phone phone-lg"><div class="screen"><img class="on" src="{esc(w['large'])}" alt="{esc(w['title'])} on a phone lock screen"></div>
+  <span class="island"></span><span class="lock"><span class="lock-date" data-date></span><span class="lock-time" data-time>9:41</span></span>
+  <span class="lock-bar"></span></div>
+  <button class="preview-close" type="button" data-close aria-label="Close preview">&times;</button>
+</dialog>"""
         pager = ""
         if newer:
             pager += f'<a href="{newer["url"]}">&larr; Newer</a>'
@@ -277,12 +303,14 @@ def build():
     {desc_html}
     <div class="actions">
       {button}
+      {preview_btn}
       {pin}
     </div>
     <p class="hint">{hint}</p>
     <nav class="pager">{pager}</nav>
   </div>
 </article>
+{preview_dialog}
 <h2 class="section-title">More {cat['name'].lower()}</h2>
 {grid(related)}
 <script>(function(){{var a=document.getElementById('dl');if(!a||a.href===a.dataset.fallback)return;var i=new Image();i.onerror=function(){{a.href=a.dataset.fallback}};i.src=a.href;}})();</script>"""
