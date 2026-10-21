@@ -21,5 +21,6 @@
     "/363-2/": "/",
     "/author/kafamsal/": "/"
   },
-  "likes_api": "https://wallspotter-likes.gokmenecer.workers.dev"
+  "likes_api": "https://wallspotter-likes.gokmenecer.workers.dev",
+  "pinterest_verify": "1d9b19fded6b13e8ff1d85042413b310"
 }

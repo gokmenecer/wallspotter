@@ -111,7 +111,7 @@ def head_tags(title, desc, path, image=None, shared=False):
         cf = ("<script defer src=\"https://static.cloudflareinsights.com/beacon.min.js\" "
               f"data-cf-beacon='{{\"token\": \"{CFG['cloudflare_analytics_token']}\"}}'></script>")
     return f"""<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">{f'<meta name="p:domain_verify" content="{esc(CFG["pinterest_verify"])}"/>' if CFG.get("pinterest_verify") else ""}
 <title>{esc(full_title)}</title>
 <meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{BASE}{path}">{'<meta name="robots" content="noindex">' if PREFIX else ('<meta name="robots" content="noindex, follow">' if shared else '')}
