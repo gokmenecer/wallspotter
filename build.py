@@ -39,6 +39,8 @@ esc = html.escape
 # ---------- data ----------
 def load_wallpapers():
     rows = []
+    sizes_file = ROOT / "data" / "pin-sizes.json"
+    pin_sizes = json.loads(sizes_file.read_text()) if sizes_file.exists() else {}
     with open(ROOT / "data" / "wallpapers.csv", newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
             r = {k: (v or "").strip() for k, v in r.items()}
@@ -54,6 +56,9 @@ def load_wallpapers():
                 r["thumb2x"] = f"{m[1]}474x{m[3]}"
                 r["large"] = f"{m[1]}736x{m[3]}"
                 r["full"] = f"{m[1]}originals{m[3]}"
+                dims = pin_sizes.get(Path(m[3]).stem)
+                if dims:
+                    r["w"], r["h"] = dims
             else:
                 r["thumb"] = r["thumb2x"] = r["large"] = r["full"] = r["image"]
                 stem = Path(r["image"]).with_suffix("")
@@ -69,11 +74,19 @@ def load_wallpapers():
                         from PIL import Image
                         with Image.open(ROOT / "static" / r["image"].lstrip("/")) as im:
                             r["wide"] = im.width > im.height
+                            r["w"], r["h"] = im.size
                     except ImportError:
                         pass
                     if r.get("wide"):
                         # big desktop originals: show a lighter 1920px copy on the page, keep the full file for download
                         r["large"] = f"/assets/thumbs/{Path(r['image']).stem}-1920.jpg"
+            if not r.get("w") and r["image"].startswith("/"):
+                try:
+                    from PIL import Image
+                    with Image.open(ROOT / "static" / r["image"].lstrip("/")) as im:
+                        r["w"], r["h"] = im.size
+                except (ImportError, OSError):
+                    pass
             r["wide"] = r.get("wide") or r["category"] == "desktop"
             r["_order"] = len(rows)  # position in the CSV: lines higher up are newer
             rows.append(r)
@@ -180,6 +193,13 @@ def page(title, desc, path, body, active="", image=None, extra_head="", shared=F
 """
 
 
+def dims_attr(w, width):
+    """width/height attributes so the browser reserves the right space before the image loads (no layout shift)."""
+    if not w.get("w") or not w.get("h"):
+        return ""
+    return f' width="{width}" height="{round(width * w["h"] / w["w"])}"'
+
+
 def card(w, eager=False):
     loading = "eager" if eager else "lazy"
     srcset = f' srcset="{esc(w["thumb"])} 1x, {esc(w["thumb2x"])} 2x"' if w["thumb"] != w["thumb2x"] else ""
@@ -187,7 +207,7 @@ def card(w, eager=False):
     cap = (f'<span class="card-cap">{esc(w["title"])}</span>'
            if w["title"] != CATEGORIES[w["category"]]["single"] else "")
     return (f'<a class="{cls}" href="{w["url"]}" data-id="{w["slug"]}"><img src="{esc(w["thumb"])}"{srcset} '
-            f'alt="{esc(w["title"])}" loading="{loading}" decoding="async">{cap}</a>')
+            f'alt="{esc(w["title"])}"{dims_attr(w, 480)} loading="{loading}" decoding="async">{cap}</a>')
 
 
 def grid(items, wide_title="Desktop wallpapers"):
@@ -346,7 +366,7 @@ def build():
         if older:
             pager += f'<a href="{older["url"]}">Older &rarr;</a>'
         body = f"""<article class="single {'is-wide' if w.get('wide') else ''}">
-  <div class="single-img"><img src="{esc(w['large'])}" alt="{esc(w['title'])}" decoding="async"></div>
+  <div class="single-img"><img src="{esc(w['large'])}" alt="{esc(w['title'])}"{dims_attr(w, 736)} decoding="async"></div>
   <div class="single-info">
     <p class="crumb"><a href="/{cat['slug']}/">{cat['name']}</a>{'' if is_orig else ' &middot; You May Also Like'}</p>
     <h1>{esc(w['title'])}</h1>
