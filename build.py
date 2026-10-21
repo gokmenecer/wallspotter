@@ -276,9 +276,15 @@ def build():
     originals = [w for w in walls if w["category"] == "originals"]
     originals_block = ""
     if originals:
-        originals_block = (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
-                           f'<a href="/originals/">See all &rarr;</a></div>'
-                           f'<p class="count">Wallpapers designed by us — free to download.</p>{grid(originals[:10])}')
+        tall_own = [w for w in originals if not w.get("wide")][:8]
+        top_row, bottom_row = tall_own[:4], tall_own[4:]
+        rows = f'<div class="grid-rows">{"".join(card(w, True) for w in top_row)}</div>'
+        rows += ('<div class="see-all-wrap"><a class="btn-glow" href="/originals/">'
+                 f'See all {len(originals)} Originals <span aria-hidden="true">&rarr;</span></a></div>')
+        if bottom_row:
+            rows += f'<div class="grid-rows">{"".join(card(w) for w in bottom_row)}</div>'
+        originals_block = (f'<h2 class="section-title">WallSpotter Originals</h2>'
+                           f'<p class="count">Wallpapers designed by us — free to download.</p>{rows}')
     show = [w for w in originals if not w.get("wide")][:8] or walls[:6]
     slides = "".join(f'<img src="{esc(w["thumb2x"])}" alt="" {"class=\"on\" " if i == 0 else ""}loading="{"eager" if i < 2 else "lazy"}">'
                      for i, w in enumerate(show))
