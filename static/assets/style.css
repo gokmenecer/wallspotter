@@ -133,7 +133,7 @@ h1.section-title { font-size: clamp(26px, 4vw, 36px); margin-top: 32px; margin-b
 /* home: Originals in two even rows with the button between them */
 .grid-rows { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .grid-rows .card { margin: 0; }
-.see-all-wrap { display: flex; justify-content: flex-end; padding: 22px 0; }
+.see-all-wrap { display: flex; justify-content: center; padding: 22px 0; }
 .btn-glow {
   display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
   font-weight: 700; font-size: 16px; color: #fff; padding: 13px 28px; border-radius: 999px;
