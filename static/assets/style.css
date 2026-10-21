@@ -163,7 +163,8 @@ time { color: var(--muted); font-size: 14px; }
 }
 .btn:hover { filter: brightness(1.08); }
 .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
-.hint { color: var(--muted); font-size: 14px; max-width: 42ch; }
+.hint { color: var(--muted); font-size: 14px; max-width: 46ch; }
+.hint a { color: var(--muted); }
 .pager { display: flex; gap: 18px; margin-top: 20px; }
 .pager a { color: var(--muted); text-decoration: none; font-weight: 600; }
 .pager a:hover { color: var(--text); }

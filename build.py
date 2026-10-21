@@ -90,7 +90,7 @@ def natural_key(s):
 
 
 # ---------- layout ----------
-def head_tags(title, desc, path, image=None):
+def head_tags(title, desc, path, image=None, shared=False):
     full_title = f"{title} | {CFG['site_name']}" if title else f"{CFG['site_name']} | {CFG['tagline']}"
     img = image or BASE + "/assets/img/og-logo.png"
     if img.startswith("/"):
@@ -103,7 +103,7 @@ def head_tags(title, desc, path, image=None):
                    f"<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}"
                    f"gtag('js',new Date());{cfg_lines}</script>")
     ads = ""
-    if CFG.get("adsense_client"):
+    if CFG.get("adsense_client") and not shared:  # never show ads on pages with wallpapers we don't own
         ads = (f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={CFG["adsense_client"]}" '
                f'crossorigin="anonymous"></script>')
     cf = ""
@@ -114,7 +114,7 @@ def head_tags(title, desc, path, image=None):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(full_title)}</title>
 <meta name="description" content="{esc(desc)}">
-<link rel="canonical" href="{BASE}{path}">{'<meta name="robots" content="noindex">' if PREFIX else ''}
+<link rel="canonical" href="{BASE}{path}">{'<meta name="robots" content="noindex">' if PREFIX else ('<meta name="robots" content="noindex, follow">' if shared else '')}
 <meta property="og:site_name" content="{esc(CFG['site_name'])}">
 <meta property="og:title" content="{esc(full_title)}">
 <meta property="og:description" content="{esc(desc)}">
@@ -157,11 +157,11 @@ def footer():
 </footer>"""
 
 
-def page(title, desc, path, body, active="", image=None, extra_head=""):
+def page(title, desc, path, body, active="", image=None, extra_head="", shared=False):
     return f"""<!doctype html>
 <html lang="en">
 <head>
-{head_tags(title, desc, path, image)}
+{head_tags(title, desc, path, image, shared)}
 {extra_head}
 </head>
 <body{f' data-likes-api="{esc(CFG["likes_api"])}"' if CFG.get("likes_api") else ""}>
@@ -267,7 +267,8 @@ def build():
 <p class="hero-links"><a class="btn" href="/originals/">Explore Originals</a><a class="btn ghost" href="/mobile-wallpaper/">Mobile</a><a class="btn ghost" href="/desktop-wallpaper/">Desktop</a></p></div>
 {showcase}</section>
 {originals_block}
-<h2 class="section-title">Latest wallpapers</h2>
+<h2 class="section-title">You May Also Like</h2>
+<p class="count">More wallpapers we've found and shared on Pinterest.</p>
 {grid([w for w in walls if w["category"] != "originals"])}
 <details class="about-box"><summary>About wallpapers</summary>{intro}</details>"""
     write("/", page("", CFG["description"], "/", body, "home"))
@@ -277,9 +278,20 @@ def build():
         items = [w for w in walls if w["category"] == key or (key == "desktop" and w["category"] == "originals" and w.get("wide"))]
         if not items:
             continue
-        lead = (" Original wallpapers designed by WallSpotter, free to download for personal use."
-                if key == "originals" else "")
-        body = f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(items)} wallpapers.{lead}</p>{grid(items)}'
+        if key == "originals":
+            body = (f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(items)} wallpapers. '
+                    f'Original wallpapers designed by WallSpotter, free to download for personal use.</p>{grid(items)}')
+        else:
+            want_wide = key == "desktop"
+            own = [w for w in walls if w["category"] == "originals" and bool(w.get("wide")) == want_wide]
+            shared_items = [w for w in walls if w["category"] == key]
+            body = f'<h1 class="section-title">{c["name"]}</h1>'
+            if own:
+                body += (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
+                         f'<a href="/originals/">See all &rarr;</a></div>{grid(own, wide_title="")}')
+            if shared_items:
+                body += (f'<h2 class="section-title">You May Also Like</h2>'
+                         f'<p class="count">More wallpapers we\'ve found and shared on Pinterest.</p>{grid(shared_items, wide_title="")}')
         desc = (f"Original phone wallpapers designed by {CFG['site_name']}, free to download." if key == "originals"
                 else f"Free {c['name'].lower()} curated by {CFG['site_name']}.")
         write(f"/{c['slug']}/", page(c["name"], desc,
@@ -307,7 +319,9 @@ def build():
         else:
             button = (f'<a class="btn" id="dl" href="{esc(w["full"])}" data-fallback="{esc(w["large"])}" '
                       f'target="_blank" rel="noopener">Open full size</a>')
-            hint = "Open the full-size image, then press and hold (phone) or right-click (computer) to save it."
+            hint = ("Open the full-size image, then press and hold (phone) or right-click (computer) to save it.<br>"
+                    "Shared from Pinterest. All rights belong to the original creator &mdash; if this is your work, "
+                    "<a href=\"/363-2/contact-us/\">contact us</a> and we'll credit or remove it.")
         like_btn = ""
         if CFG.get("likes_api"):
             like_btn = (f'<button class="like-btn" type="button" data-like="{w["slug"]}" aria-pressed="false" aria-label="Like this wallpaper">'
@@ -331,7 +345,7 @@ def build():
         body = f"""<article class="single {'is-wide' if w.get('wide') else ''}">
   <div class="single-img"><img src="{esc(w['large'])}" alt="{esc(w['title'])}" decoding="async"></div>
   <div class="single-info">
-    <p class="crumb"><a href="/{cat['slug']}/">{cat['name']}</a></p>
+    <p class="crumb"><a href="/{cat['slug']}/">{cat['name']}</a>{'' if is_orig else ' &middot; You May Also Like'}</p>
     <h1>{esc(w['title'])}</h1>
     <time datetime="{w['date']}">{date.fromisoformat(w['date']).strftime('%d %B %Y')}</time>
     {desc_html}
@@ -351,8 +365,9 @@ def build():
 <script>(function(){{var a=document.getElementById('dl');if(!a||a.href===a.dataset.fallback)return;var i=new Image();i.onerror=function(){{a.href=a.dataset.fallback}};i.src=a.href;}})();</script>"""
         meta_desc = w.get("description") or f"{w['title']} — free download from {CFG['site_name']}."
         write(w["url"], page(w["title"], meta_desc, w["url"], body,
-                             w["category"], image=w["large"]))
-        sitemap_urls.append(w["url"])
+                             w["category"], image=w["large"], shared=not is_orig))
+        if is_orig:
+            sitemap_urls.append(w["url"])  # shared (Pinterest) pages are kept out of search engines
         redirect(f"{w['url']}amp/", w["url"])
 
     # Static pages (pages/*.html, first line is "<!-- Title | description -->")
