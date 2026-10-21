@@ -15,6 +15,7 @@ PREFIX = CFG.get("path_prefix", "").rstrip("/")
 BASE = CFG["base_url"].rstrip("/") + PREFIX
 # changes whenever style.css changes, so browsers fetch the new version instead of a cached one
 CSS_VER = hashlib.md5((ROOT / "static" / "assets" / "style.css").read_bytes()).hexdigest()[:8]
+ICON_VER = hashlib.md5((ROOT / "static" / "assets" / "img" / "favicon.svg").read_bytes()).hexdigest()[:8]
 JS_VER = hashlib.md5((ROOT / "static" / "assets" / "site.js").read_bytes()).hexdigest()[:8]
 
 
@@ -123,9 +124,10 @@ def head_tags(title, desc, path, image=None, shared=False):
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0e0f12">
-<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="/assets/img/favicon.png" type="image/png">
-<link rel="apple-touch-icon" href="/assets/img/favicon.png">
+<link rel="icon" href="/assets/img/favicon.svg?v={ICON_VER}" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon.png?v={ICON_VER}" type="image/png" sizes="180x180">
+<link rel="shortcut icon" href="/favicon.ico?v={ICON_VER}">
+<link rel="apple-touch-icon" href="/assets/img/favicon.png?v={ICON_VER}">
 <link rel="preconnect" href="https://i.pinimg.com">
 <link rel="stylesheet" href="/assets/style.css?v={CSS_VER}">
 <script>document.documentElement.classList.add('js')</script>
@@ -140,7 +142,7 @@ def nav(active=""):
              ("/desktop-wallpaper/", "Desktop", "desktop"), ("/about-us/", "About", "about")]
     links = "".join(f'<a href="{u}"{" aria-current=\"page\"" if k == active else ""}>{t}</a>' for u, t, k in items)
     return f"""<header class="top">
-  <a class="brand" href="/"><img src="/assets/img/logo.svg" alt="{esc(CFG['site_name'])}" width="416" height="96"></a>
+  <a class="brand" href="/"><img src="/assets/img/logo.svg?v={ICON_VER}" alt="{esc(CFG['site_name'])}" width="416" height="96"></a>
   <nav>{links}</nav>
 </header>"""
 
