@@ -280,7 +280,7 @@ def build():
         top_row, bottom_row = tall_own[:4], tall_own[4:]
         rows = f'<div class="grid-rows">{"".join(card(w, True) for w in top_row)}</div>'
         rows += ('<div class="see-all-wrap"><a class="btn-glow" href="/originals/">'
-                 f'See all {len(originals)} Originals <span aria-hidden="true">&rarr;</span></a></div>')
+                 'See all Originals <span aria-hidden="true">&rarr;</span></a></div>')
         if bottom_row:
             rows += f'<div class="grid-rows">{"".join(card(w) for w in bottom_row)}</div>'
         originals_block = (f'<h2 class="section-title">WallSpotter Originals</h2>'
