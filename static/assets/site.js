@@ -108,4 +108,31 @@
   } else if (openBtn) {
     openBtn.hidden = true;
   }
+
+  // Light / dark theme button (choice is remembered; otherwise the device setting decides)
+  var root = document.documentElement, themeBtn = document.querySelector('.theme-btn');
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+  function currentTheme() {
+    return root.getAttribute('data-theme') || (mq && mq.matches ? 'light' : 'dark');
+  }
+  function paintTheme() {
+    var t = currentTheme();
+    if (themeBtn) {
+      themeBtn.textContent = t === 'light' ? '🌙' : '☀️';
+      themeBtn.setAttribute('aria-label', t === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+      themeBtn.title = themeBtn.getAttribute('aria-label');
+    }
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', t === 'light' ? '#f2ede4' : '#1d2129');
+  }
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = currentTheme() === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('ws-theme', next); } catch (e) {}
+      paintTheme();
+    });
+  }
+  if (mq && mq.addEventListener) mq.addEventListener('change', paintTheme);
+  paintTheme();
 })();
