@@ -25,7 +25,7 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 16px 48px; }
   max-width: var(--max); margin: 0 auto; padding: 10px 16px;
   background: rgba(14, 15, 18, .88); backdrop-filter: blur(10px);
 }
-.brand img { height: 38px; width: auto; border-radius: 8px; }
+.brand img { height: 44px; width: auto; }
 .top nav { display: flex; gap: 4px; flex-wrap: wrap; }
 .top nav a {
   text-decoration: none; color: var(--muted); font-weight: 600; font-size: 15px;
@@ -209,7 +209,7 @@ time { color: var(--muted); font-size: 14px; }
   .single { grid-template-columns: 1fr; gap: 16px; }
   .single-info { position: static; }
   .top { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .brand img { height: 28px; }
+  .brand img { height: 34px; }
   .top nav { gap: 0; flex-wrap: nowrap; }
   .top nav a { padding: 6px 8px; font-size: 13.5px; }
 }
