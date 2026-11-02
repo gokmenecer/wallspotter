@@ -210,13 +210,14 @@ def card(w, eager=False):
             f'alt="{esc(w["title"])}"{dims_attr(w, 480)} loading="{loading}" decoding="async">{cap}</a>')
 
 
-def grid(items, wide_title="Desktop wallpapers"):
-    """Portrait wallpapers in a masonry grid; landscape ones in their own wide grid below."""
+def grid(items, wide_title="Desktop wallpapers", even=False):
+    """Portrait wallpapers in a masonry grid; landscape ones in their own wide grid below.
+    even=True: a row-by-row grid (newest first, left to right) for same-size wallpapers like Originals."""
     tall = [w for w in items if not w.get("wide")]
     wide = [w for w in items if w.get("wide")]
     out = ""
     if tall:
-        out += '<div class="grid">' + "".join(card(w, i < 6) for i, w in enumerate(tall)) + "</div>"
+        out += f'<div class="{"grid-even" if even else "grid"}">' + "".join(card(w, i < 6) for i, w in enumerate(tall)) + "</div>"
     if wide:
         if tall and wide_title:
             out += f'<h3 class="sub-title">{esc(wide_title)}</h3>'
@@ -309,7 +310,7 @@ def build():
             continue
         if key == "originals":
             body = (f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(items)} wallpapers. '
-                    f'Original wallpapers designed by WallSpotter, free to download for personal use.</p>{grid(items)}')
+                    f'Original wallpapers designed by WallSpotter, free to download for personal use.</p>{grid(items, even=True)}')
         else:
             want_wide = key == "desktop"
             own = [w for w in walls if w["category"] == "originals" and bool(w.get("wide")) == want_wide]
@@ -317,7 +318,7 @@ def build():
             body = f'<h1 class="section-title">{c["name"]}</h1>'
             if own:
                 body += (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
-                         f'<a href="/originals/">See all &rarr;</a></div>{grid(own, wide_title="")}')
+                         f'<a href="/originals/">See all &rarr;</a></div>{grid(own, wide_title="", even=True)}')
             if shared_items:
                 body += (f'<h2 class="section-title">You May Also Like</h2>'
                          f'<p class="count">More wallpapers we\'ve found and shared on Pinterest.</p>{grid(shared_items, wide_title="")}')

@@ -129,7 +129,11 @@ h1.section-title { font-size: clamp(26px, 4vw, 36px); margin-top: 32px; margin-b
 .grid-wide { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 14px; }
 .grid-wide .card { margin: 0; }
 .grid-wide .card img { aspect-ratio: 16 / 9; object-fit: cover; min-height: 0; }
-.grid + .sub-title { margin-top: 28px; }
+.grid + .sub-title, .grid-even + .sub-title { margin-top: 28px; }
+/* Originals: same-size phone wallpapers, filled row by row so the newest come first */
+.grid-even { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.grid-even .card { margin: 0; }
+.grid-even .card img { aspect-ratio: 9 / 20; object-fit: cover; min-height: 0; }
 /* home: Originals in two even rows with the button between them */
 .grid-rows { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .grid-rows .card { margin: 0; }
@@ -270,6 +274,7 @@ time { color: var(--muted); font-size: 14px; }
 
 @media (max-width: 760px) {
   .grid { columns: 2; column-gap: 10px; }
+  .grid-even { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .grid-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .see-all-wrap { padding: 16px 0; }
   .card { margin-bottom: 10px; }
