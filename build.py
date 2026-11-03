@@ -28,7 +28,7 @@ def with_prefix(text):
     return text.replace('url=/', f'url={PREFIX}/').replace('location.replace("/', f'location.replace("{PREFIX}/')
 
 CATEGORIES = {
-    "originals": {"slug": "originals", "name": "WallSpotter Originals", "single": "Original Wallpaper"},
+    "originals": {"slug": "all-wallpapers", "name": "All Wallpapers", "single": "Original Wallpaper"},
     "mobile": {"slug": "mobile-wallpaper", "name": "Mobile Wallpapers", "single": "Mobile Wallpaper"},
     "desktop": {"slug": "desktop-wallpaper", "name": "Desktop Wallpapers", "single": "Desktop Wallpaper"},
 }
@@ -141,7 +141,6 @@ def head_tags(title, desc, path, image=None, shared=False):
 <link rel="icon" href="/assets/img/favicon.png?v={ICON_VER}" type="image/png" sizes="180x180">
 <link rel="shortcut icon" href="/favicon.ico?v={ICON_VER}">
 <link rel="apple-touch-icon" href="/assets/img/favicon.png?v={ICON_VER}">
-<link rel="preconnect" href="https://i.pinimg.com">
 <link rel="stylesheet" href="/assets/style.css?v={CSS_VER}">
 <script>(function(d){{d.classList.add('js');try{{var t=localStorage.getItem('ws-theme');if(t==='light'||t==='dark')d.setAttribute('data-theme',t)}}catch(e){{}}}})(document.documentElement)</script>
 <script defer src="/assets/site.js?v={JS_VER}"></script>
@@ -151,7 +150,7 @@ def head_tags(title, desc, path, image=None, shared=False):
 
 
 def nav(active=""):
-    items = [("/", "Home", "home"), ("/originals/", "Originals", "originals"), ("/mobile-wallpaper/", "Mobile", "mobile"),
+    items = [("/", "Home", "home"), ("/all-wallpapers/", "All Wallpapers", "originals"), ("/mobile-wallpaper/", "Mobile", "mobile"),
              ("/desktop-wallpaper/", "Desktop", "desktop"), ("/about-us/", "About", "about")]
     links = "".join(f'<a href="{u}"{" aria-current=\"page\"" if k == active else ""}>{t}</a>' for u, t, k in items)
     return f"""<header class="top">
@@ -169,7 +168,7 @@ def footer():
     <a href="/terms-conditions/">Terms &amp; Conditions</a><a href="/sitemap/">Sitemap</a>
   </div>
   <div class="foot-social">{social}</div>
-  <p>&copy; {date.today().year} {esc(CFG['site_name'])}. <a href="/originals/">Originals</a> are created by WallSpotter; other wallpapers are shared from our <a href="{esc(CFG['social'].get('Pinterest', '#'))}" rel="noopener">Pinterest boards</a>.</p>
+  <p>&copy; {date.today().year} {esc(CFG['site_name'])}. Every wallpaper on this site is an original design created by WallSpotter.</p>
 </footer>"""
 
 
@@ -280,52 +279,54 @@ def build():
         tall_own = [w for w in originals if not w.get("wide")][:8]
         top_row, bottom_row = tall_own[:4], tall_own[4:]
         rows = f'<div class="grid-rows">{"".join(card(w, True) for w in top_row)}</div>'
-        rows += ('<div class="see-all-wrap"><a class="btn-glow" href="/originals/">'
-                 'See all Originals <span aria-hidden="true">&rarr;</span></a></div>')
+        rows += ('<div class="see-all-wrap"><a class="btn-glow" href="/all-wallpapers/">'
+                 'See all wallpapers <span aria-hidden="true">&rarr;</span></a></div>')
         if bottom_row:
             rows += f'<div class="grid-rows">{"".join(card(w) for w in bottom_row)}</div>'
-        originals_block = (f'<h2 class="section-title">WallSpotter Originals</h2>'
-                           f'<p class="count">Wallpapers designed by us — free to download.</p>{rows}')
+        originals_block = (f'<h2 class="section-title">Latest Wallpapers</h2>'
+                           f'<p class="count">Original wallpapers designed by WallSpotter — free to download.</p>{rows}')
+    wide_own = [w for w in originals if w.get("wide")][:3]
+    if wide_own:
+        originals_block += (f'<div class="section-head"><h2 class="section-title">Desktop Wallpapers</h2>'
+                            f'<a href="/desktop-wallpaper/">See all &rarr;</a></div>{grid(wide_own, wide_title="")}')
     show = [w for w in originals if not w.get("wide")][:8] or walls[:6]
     slides = "".join(f'<img src="{esc(w["thumb2x"])}" alt="" {"class=\"on\" " if i == 0 else ""}loading="{"eager" if i < 2 else "lazy"}">'
                      for i, w in enumerate(show))
-    showcase = f"""<a class="showcase" href="/originals/" aria-label="WallSpotter Originals">
+    showcase = f"""<a class="showcase" href="/all-wallpapers/" aria-label="All WallSpotter wallpapers">
   <div class="phone"><div class="screen">{slides}</div><span class="island"></span>
   <span class="lock"><span class="lock-date" data-date></span><span class="lock-time" data-time>9:41</span></span></div>
 </a>"""
     body = f"""<section class="hero hero-split"><div class="hero-text"><h1>{esc(CFG['site_name'])}</h1><p>{esc(CFG['tagline'])} — free mobile and desktop wallpapers.</p>
-<p class="hero-links"><a class="btn" href="/originals/">Explore Originals</a><a class="btn ghost" href="/mobile-wallpaper/">Mobile</a><a class="btn ghost" href="/desktop-wallpaper/">Desktop</a></p></div>
+<p class="hero-links"><a class="btn" href="/all-wallpapers/">Explore all wallpapers</a><a class="btn ghost" href="/mobile-wallpaper/">Mobile</a><a class="btn ghost" href="/desktop-wallpaper/">Desktop</a></p></div>
 {showcase}</section>
 {originals_block}
-<h2 class="section-title">You May Also Like</h2>
-<p class="count">More wallpapers we've found and shared on Pinterest.</p>
-{grid([w for w in walls if w["category"] != "originals"])}
 <details class="about-box"><summary>About wallpapers</summary>{intro}</details>"""
     write("/", page("", CFG["description"], "/", body, "home"))
 
     # Category pages
     for key, c in CATEGORIES.items():
-        items = [w for w in walls if w["category"] == key or (key == "desktop" and w["category"] == "originals" and w.get("wide"))]
-        if not items:
-            continue
+        items = [w for w in walls if w["category"] == key]
         if key == "originals":
+            if not items:
+                continue
             body = (f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(items)} wallpapers. '
-                    f'Original wallpapers designed by WallSpotter, free to download for personal use.</p>{grid(items, even=True)}')
+                    f'Original phone and desktop wallpapers designed by WallSpotter, free to download for personal use.</p>'
+                    f'{grid(items, even=True)}')
+            desc = f"All original phone and desktop wallpapers designed by {CFG['site_name']}, free to download."
         else:
             want_wide = key == "desktop"
-            own = [w for w in walls if w["category"] == "originals" and bool(w.get("wide")) == want_wide]
-            shared_items = [w for w in walls if w["category"] == key]
-            body = f'<h1 class="section-title">{c["name"]}</h1>'
-            if own:
-                body += (f'<div class="section-head"><h2 class="section-title">WallSpotter Originals</h2>'
-                         f'<a href="/originals/">See all &rarr;</a></div>{grid(own, wide_title="", even=True)}')
-            if shared_items:
-                body += (f'<h2 class="section-title">You May Also Like</h2>'
-                         f'<p class="count">More wallpapers we\'ve found and shared on Pinterest.</p>{grid(shared_items, wide_title="")}')
-        desc = (f"Original phone wallpapers designed by {CFG['site_name']}, free to download." if key == "originals"
-                else f"Free {c['name'].lower()} curated by {CFG['site_name']}.")
+            own = [w for w in walls if w["category"] in ("originals", key) and bool(w.get("wide")) == want_wide]
+            if not own:
+                continue
+            kind = "desktop" if want_wide else "phone"
+            body = (f'<h1 class="section-title">{c["name"]}</h1><p class="count">{len(own)} wallpapers. '
+                    f'Original {kind} wallpapers designed by WallSpotter, free to download for personal use.</p>'
+                    f'{grid(own, wide_title="", even=True)}')
+            desc = f"Original {kind} wallpapers designed by {CFG['site_name']}, free to download."
         write(f"/{c['slug']}/", page(c["name"], desc,
                                     f"/{c['slug']}/", body, key))
+        if key == "originals":
+            redirect("/originals/", f"/{c['slug']}/")
         redirect(f"/category/{c['slug']}/", f"/{c['slug']}/")
         sitemap_urls.append(f"/{c['slug']}/")
 
@@ -340,6 +341,7 @@ def build():
         start = same.index(older) if older in same else 0
         related = (same[start:] + same[:start])[:12]
         cat = CATEGORIES[w["category"]]
+        crumb = CATEGORIES["desktop" if w.get("wide") else "mobile"]
         pin = f'<a class="btn ghost" href="{esc(w["pin"])}" rel="noopener">View on Pinterest</a>' if w.get("pin") else ""
         is_orig = w["category"] == "originals"
         desc_html = f'<p class="desc">{esc(w["description"])}</p>' if w.get("description") else ""
@@ -375,7 +377,7 @@ def build():
         body = f"""<article class="single {'is-wide' if w.get('wide') else ''}">
   <div class="single-img"><img src="{esc(w['large'])}" alt="{esc(w['title'])}"{dims_attr(w, 736)} decoding="async"></div>
   <div class="single-info">
-    <p class="crumb"><a href="/{cat['slug']}/">{cat['name']}</a>{'' if is_orig else ' &middot; You May Also Like'}</p>
+    <p class="crumb"><a href="/{crumb['slug']}/">{crumb['name']}</a></p>
     <h1>{esc(w['title'])}</h1>
     <time datetime="{w['date']}">{date.fromisoformat(w['date']).strftime('%d %B %Y')}</time>
     {desc_html}
@@ -390,7 +392,7 @@ def build():
   </div>
 </article>
 {preview_dialog}
-<h2 class="section-title">{'More from ' + cat['name'] if w['category'] == 'originals' else 'More ' + cat['name'].lower()}</h2>
+<h2 class="section-title">More wallpapers</h2>
 {grid(related)}
 <script>(function(){{var a=document.getElementById('dl');if(!a||a.href===a.dataset.fallback)return;var i=new Image();i.onerror=function(){{a.href=a.dataset.fallback}};i.src=a.href;}})();</script>"""
         meta_desc = w.get("description") or f"{w['title']} — free download from {CFG['site_name']}."
@@ -428,6 +430,13 @@ def build():
     # Old WordPress addresses
     for old, new in CFG.get("redirects", {}).items():
         redirect(old, new)
+    # pages of wallpapers that were removed from the site (Pinterest-shared, not ours) go to their category
+    removed = ROOT / "data" / "removed-redirects.json"
+    if removed.exists():
+        for old, new in json.loads(removed.read_text(encoding="utf-8")).items():
+            if not (OUT / old.lstrip("/") / "index.html").exists():
+                redirect(old, new)
+                redirect(f"{old}amp/", new)
     pages_count = 10
     for n in range(2, pages_count + 1):
         redirect(f"/page/{n}/", "/")
