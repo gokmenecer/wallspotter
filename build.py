@@ -262,6 +262,38 @@ def make_thumbs(walls, width=480):
             im.save(dst, "JPEG", quality=82, optimize=True, progressive=True)
 
 
+def make_social(walls):
+    """1080x1350 post images (blurred background + rounded card) for automatic social posts."""
+    from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+    font = None
+    for fp in ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",):
+        if Path(fp).exists():
+            font = ImageFont.truetype(fp, 30)
+    font = font or ImageFont.load_default()
+    for w in walls:
+        if w.get("wide") or not w["image"].startswith("/"):
+            continue
+        dst = OUT / "assets" / "social" / f"{w['slug']}.jpg"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with Image.open(ROOT / "static" / w["image"].lstrip("/")) as im:
+            src = im.convert("RGB")
+        W, H = src.size
+        if W / H > 0.45:
+            cw = int(H * 0.45); x0 = (W - cw) // 2; src = src.crop((x0, 0, x0 + cw, H))
+        else:
+            ch = int(W / 0.45); y0 = (H - ch) // 2; src = src.crop((0, y0, W, y0 + ch))
+        bg = src.resize((1080, 2400)).crop((0, 525, 1080, 1875)).filter(ImageFilter.GaussianBlur(40))
+        bg = ImageEnhance.Brightness(bg).enhance(0.45)
+        card = src.resize((535, 1190), Image.LANCZOS)
+        m = Image.new("L", (535, 1190), 0); ImageDraw.Draw(m).rounded_rectangle((0, 0, 534, 1189), radius=36, fill=255)
+        sh = Image.new("L", (1080, 1350), 0); ImageDraw.Draw(sh).rounded_rectangle((272, 62, 807, 1252), radius=36, fill=170)
+        bg.paste((0, 0, 0), (0, 0), sh.filter(ImageFilter.GaussianBlur(22)))
+        bg.paste(card, ((1080 - 535) // 2, 50), m)
+        d = ImageDraw.Draw(bg); t = "wallspotter.com"; tw = d.textlength(t, font=font)
+        d.text(((1080 - tw) / 2, 1268), t, font=font, fill=(245, 245, 245))
+        bg.save(dst, "JPEG", quality=90, optimize=True)
+
+
 # ---------- build ----------
 def build():
     if OUT.exists():
@@ -269,6 +301,7 @@ def build():
     shutil.copytree(ROOT / "static", OUT)
     walls = load_wallpapers()
     make_thumbs(walls)
+    make_social([w for w in walls if w["category"] == "originals"])
     sitemap_urls = ["/"]
 
     # Home

@@ -1,0 +1,53 @@
+name: Share on social media
+
+on:
+  workflow_run:
+    workflows: ["Build and publish site"]
+    types: [completed]
+  schedule:
+    - cron: "23 4 * * 1"   # every Monday: renew the Threads token
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "post = share new wallpapers, check = test tokens, refresh = renew Threads token"
+        type: choice
+        options: [check, post, refresh]
+        default: check
+
+permissions:
+  contents: write
+
+concurrency:
+  group: social
+  cancel-in-progress: false
+
+jobs:
+  social:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - name: Run
+        env:
+          SOCIAL_KEY: ${{ secrets.SOCIAL_KEY }}
+        run: |
+          case "${{ github.event_name }}" in
+            schedule) mode=refresh ;;
+            workflow_dispatch) mode="${{ inputs.mode }}" ;;
+            *) mode=post ;;
+          esac
+          python scripts/social.py "$mode"
+      - name: Save what was shared
+        if: always()
+        run: |
+          git add data/social-posted.json data/social-secrets.enc
+          if ! git diff --cached --quiet; then
+            git -c user.name="wallspotter-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Update social sharing state"
+            git push
+          fi
