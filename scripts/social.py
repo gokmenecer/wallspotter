@@ -42,18 +42,18 @@ def save_secrets(sec):
 
 
 # ---------- http ----------
-def call(method, url, **params):
+def call(method, endpoint, **params):
     data = urllib.parse.urlencode(params).encode()
     if method == "GET":
-        req = urllib.request.Request(url + "?" + data.decode())
+        req = urllib.request.Request(endpoint + "?" + data.decode())
     else:
-        req = urllib.request.Request(url, data=data, method=method)
+        req = urllib.request.Request(endpoint, data=data, method=method)
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             return json.loads(r.read())
     except urllib.error.HTTPError as e:
         body = e.read().decode(errors="replace")
-        raise RuntimeError(f"{method} {url.split('?')[0]} -> {e.code}: {body}") from None
+        raise RuntimeError(f"{method} {endpoint} -> {e.code}: {body}") from None
 
 
 # ---------- captions ----------
