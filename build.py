@@ -173,6 +173,13 @@ def coffee_box():
             + coffee_link() + '</p>')
 
 
+def coffee_strip():
+    if not CFG.get("coffee_url"):
+        return ""
+    return ('<div class="coffee-strip"><p>All wallpapers here are free to download. '
+            'If you enjoy them, you can support new designs.</p>' + coffee_link() + '</div>')
+
+
 def footer():
     social = "".join(f'<a href="{esc(u)}" rel="noopener">{esc(n)}</a>' for n, u in CFG.get("social", {}).items())
     return f"""<footer class="foot">
@@ -348,6 +355,7 @@ def build():
 <p class="hero-links"><a class="btn" href="/all-wallpapers/">Explore all wallpapers</a><a class="btn ghost" href="/mobile-wallpaper/">Mobile</a><a class="btn ghost" href="/desktop-wallpaper/">Desktop</a></p></div>
 {showcase}</section>
 {originals_block}
+{coffee_strip()}
 <details class="about-box"><summary>About wallpapers</summary>{intro}</details>"""
     write("/", page("", CFG["description"], "/", body, "home"))
 
