@@ -297,3 +297,10 @@ time { color: var(--muted); font-size: 14px; }
   .js .card { opacity: 1; transform: none; }
   .preview[open] .phone-lg { animation: none; }
 }
+
+/* Buy Me a Coffee: small and clearly separate from the Download button */
+.coffee-box { margin: 18px 0 0; font-size: 14px; color: var(--muted, #9aa0a6); }
+.coffee, .coffee-foot { display: inline-block; margin-left: 4px; padding: 4px 12px; border-radius: 999px;
+  border: 1px solid #e6c200; background: rgba(255, 221, 0, .12); color: var(--text); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.coffee:hover, .coffee-foot:hover { background: #ffdd00; color: #111; }
+.coffee-foot { margin: 10px 0 4px; }

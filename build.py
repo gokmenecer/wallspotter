@@ -159,6 +159,20 @@ def nav(active=""):
 </header>"""
 
 
+def coffee_link(cls="coffee"):
+    url = CFG.get("coffee_url")
+    if not url:
+        return ""
+    return f'<a class="{cls}" href="{esc(url)}" target="_blank" rel="noopener">&#9749; Buy me a coffee</a>'
+
+
+def coffee_box():
+    if not CFG.get("coffee_url"):
+        return ""
+    return ('<p class="coffee-box">Like this wallpaper? It&rsquo;s free &mdash; if you want to support new designs, '
+            + coffee_link() + '</p>')
+
+
 def footer():
     social = "".join(f'<a href="{esc(u)}" rel="noopener">{esc(n)}</a>' for n, u in CFG.get("social", {}).items())
     return f"""<footer class="foot">
@@ -168,6 +182,7 @@ def footer():
     <a href="/terms-conditions/">Terms &amp; Conditions</a><a href="/sitemap/">Sitemap</a>
   </div>
   <div class="foot-social">{social}</div>
+  {coffee_link("coffee-foot")}
   <p>&copy; {date.today().year} {esc(CFG['site_name'])}. Every wallpaper on this site is an original design created by WallSpotter.</p>
 </footer>"""
 
@@ -421,6 +436,7 @@ def build():
       {pin}
     </div>
     <p class="hint">{hint}</p>
+    {coffee_box()}
     <nav class="pager">{pager}</nav>
   </div>
 </article>
