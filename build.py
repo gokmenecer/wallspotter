@@ -149,13 +149,21 @@ def head_tags(title, desc, path, image=None, shared=False):
 {cf}"""
 
 
+def nav_coffee():
+    url = CFG.get("coffee_url")
+    if not url:
+        return ""
+    return (f'<a class="nav-coffee" href="{esc(url)}" target="_blank" rel="noopener" aria-label="Buy me a coffee">'
+            '<span aria-hidden="true">&#9749;</span><span class="nav-coffee-text"> Buy me a coffee</span></a>')
+
+
 def nav(active=""):
     items = [("/", "Home", "home"), ("/all-wallpapers/", "All Wallpapers", "originals"), ("/mobile-wallpaper/", "Mobile", "mobile"),
              ("/desktop-wallpaper/", "Desktop", "desktop"), ("/about-us/", "About", "about")]
     links = "".join(f'<a href="{u}"{" aria-current=\"page\"" if k == active else ""}>{t}</a>' for u, t, k in items)
     return f"""<header class="top">
   <a class="brand" href="/"><img class="logo-dark" src="/assets/img/logo.svg?v={ICON_VER}" alt="{esc(CFG['site_name'])}" width="416" height="96"><img class="logo-light" src="/assets/img/logo-light.svg?v={ICON_VER}" alt="{esc(CFG['site_name'])}" width="416" height="96"></a>
-  <div class="top-right"><nav>{links}</nav><button class="theme-btn" type="button" aria-label="Switch theme">☀️</button></div>
+  <div class="top-right"><nav>{links}</nav>{nav_coffee()}<button class="theme-btn" type="button" aria-label="Switch theme">☀️</button></div>
 </header>"""
 
 

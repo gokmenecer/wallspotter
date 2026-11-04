@@ -309,3 +309,15 @@ time { color: var(--muted); font-size: 14px; }
   text-align: center; color: var(--muted); font-size: 15px; }
 .coffee-strip p { margin: 0; }
 .coffee-strip .coffee { margin-left: 0; }
+
+/* Buy Me a Coffee in the header */
+.nav-coffee { flex: none; display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid #e6c200; background: rgba(255, 221, 0, .14); color: var(--text); font-weight: 700; font-size: 14px;
+  text-decoration: none; white-space: nowrap; transition: background .2s ease, transform .2s ease; }
+.nav-coffee-text { margin-left: 4px; }
+.nav-coffee:hover { background: #ffdd00; color: #111; transform: translateY(-1px); }
+@media (max-width: 1000px) { .nav-coffee-text { display: none; } .nav-coffee { width: 38px; padding: 0; justify-content: center; font-size: 17px; } }
+@media (max-width: 760px) {
+  .nav-coffee { position: absolute; top: 10px; right: 58px; width: 34px; height: 34px; padding: 0; justify-content: center; font-size: 16px; }
+  .nav-coffee-text { display: none; }
+}
