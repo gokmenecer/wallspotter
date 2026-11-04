@@ -197,7 +197,6 @@ def footer():
     <a href="/terms-conditions/">Terms &amp; Conditions</a><a href="/sitemap/">Sitemap</a>
   </div>
   <div class="foot-social">{social}</div>
-  {coffee_link("coffee-foot")}
   <p>&copy; {date.today().year} {esc(CFG['site_name'])}. Every wallpaper on this site is an original design created by WallSpotter.</p>
 </footer>"""
 
