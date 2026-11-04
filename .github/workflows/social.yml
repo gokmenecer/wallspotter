@@ -5,13 +5,13 @@ on:
     workflows: ["Build and publish site"]
     types: [completed]
   schedule:
-    - cron: "23 4 * * 1"   # every Monday: renew the Threads token
+    - cron: "41 5 * * *"   # every day 08:41 Istanbul: Threads stats (+ token renewal weekly)
   workflow_dispatch:
     inputs:
       mode:
-        description: "post = share new wallpapers, check = test tokens, refresh = renew Threads token"
+        description: "post = share new wallpapers, check = test tokens, refresh = renew Threads token, stats = Threads top posts"
         type: choice
-        options: [check, post, refresh]
+        options: [check, post, refresh, stats]
         default: check
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
           SOCIAL_KEY: ${{ secrets.SOCIAL_KEY }}
         run: |
           case "${{ github.event_name }}" in
-            schedule) mode=refresh ;;
+            schedule) mode=daily ;;
             workflow_dispatch) mode="${{ inputs.mode }}" ;;
             *) mode=post ;;
           esac
@@ -46,7 +46,7 @@ jobs:
       - name: Save what was shared
         if: always()
         run: |
-          git add data/social-posted.json data/social-secrets.enc
+          git add data/social-posted.json data/social-secrets.enc data/threads-top.json 2>/dev/null || git add data/social-posted.json data/social-secrets.enc
           if ! git diff --cached --quiet; then
             git -c user.name="wallspotter-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Update social sharing state"
             git push

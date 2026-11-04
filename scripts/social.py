@@ -5,6 +5,8 @@ Runs in GitHub Actions after the site is deployed (see .github/workflows/social.
   python scripts/social.py post      share every originals wallpaper not yet in data/social-posted.json
   python scripts/social.py check     only test that the saved tokens still work
   python scripts/social.py refresh   renew the Threads token (it lasts 60 days) and save it again
+  python scripts/social.py stats     rank our Threads posts of the last 30 days -> data/threads-top.json
+  python scripts/social.py daily     stats every day, plus refresh when the token is 6+ days old
 
 The access tokens live encrypted in data/social-secrets.enc; the key is the SOCIAL_KEY repository secret.
 """
@@ -184,5 +186,54 @@ def cmd_refresh():
     print("Threads token renewed; valid for", r.get("expires_in", 0) // 86400, "days")
 
 
+def _metric(item):
+    if "total_value" in item:
+        return item["total_value"].get("value", 0)
+    vals = item.get("values") or [{}]
+    return vals[-1].get("value", 0)
+
+
+def cmd_stats():
+    """Most liked/replied Threads posts of the last 30 days, used as inspiration for new wallpapers."""
+    import re
+    from datetime import datetime, timedelta, timezone
+    sec = load_secrets()
+    tok = sec["threads_token"]
+    since = int((datetime.now(timezone.utc) - timedelta(days=30)).timestamp())
+    posts, url, params = [], f"{THREADS}/me/threads", dict(fields="id,timestamp,permalink,text,media_type,media_url",
+                                                            since=since, limit=100, access_token=tok)
+    while url and len(posts) < 500:
+        r = call("GET", url, **params)
+        posts += r.get("data", [])
+        nxt = (r.get("paging") or {}).get("next")
+        url, params = (nxt.split("?")[0], dict(urllib.parse.parse_qsl(nxt.split("?", 1)[1]))) if nxt else (None, None)
+    rows = []
+    for p in posts:
+        try:
+            ins = call("GET", f"{THREADS}/{p['id']}/insights", metric="views,likes,replies,reposts,quotes", access_token=tok)
+            m = {i["name"]: _metric(i) for i in ins.get("data", [])}
+        except Exception as e:
+            print("::warning::insights failed for", p["id"], e)
+            continue
+        slug = re.search(r"wallspotter\.com/([a-z0-9-]+)", p.get("text") or "")
+        score = m.get("likes", 0) + 2 * m.get("replies", 0) + 2 * m.get("reposts", 0) + 2 * m.get("quotes", 0)
+        rows.append({"slug": slug.group(1) if slug else None, "permalink": p.get("permalink"), "date": p.get("timestamp", "")[:10],
+                     "score": score, **{k: m.get(k, 0) for k in ("likes", "replies", "reposts", "quotes", "views")},
+                     "title": (p.get("text") or "").split("\n")[0][:80]})
+    rows.sort(key=lambda r: (r["score"], r["views"]), reverse=True)
+    out = {"updated": date.today().isoformat(), "window_days": 30, "posts": rows[:20]}
+    (ROOT / "data" / "threads-top.json").write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n")
+    for r in rows[:5]:
+        print(f"{r['score']:>4}  likes={r['likes']} replies={r['replies']} views={r['views']}  {r['slug'] or r['title']}")
+
+
+def cmd_daily():
+    sec = load_secrets()
+    last = sec.get("threads_renewed", "2000-01-01")
+    if (date.today() - date.fromisoformat(last)).days >= 6:
+        cmd_refresh()
+    cmd_stats()
+
+
 if __name__ == "__main__":
-    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
+    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
