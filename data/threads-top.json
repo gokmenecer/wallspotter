@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05",
+ "updated": "2026-11-06",
  "window_days": 30,
  "posts": [
   {
@@ -11,7 +11,7 @@
    "replies": 0,
    "reposts": 1,
    "quotes": 1,
-   "views": 4580,
+   "views": 4581,
    "title": "Ocean Blue Gradient 💙"
   },
   {
@@ -23,7 +23,7 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 0,
-   "views": 5193,
+   "views": 5195,
    "title": "Midnight Glow Frame ✨"
   },
   {
@@ -35,7 +35,7 @@
    "replies": 0,
    "reposts": 2,
    "quotes": 0,
-   "views": 3149,
+   "views": 3154,
    "title": "Layered Dunes 🏜️"
   },
   {
@@ -47,7 +47,7 @@
    "replies": 0,
    "reposts": 1,
    "quotes": 0,
-   "views": 3628,
+   "views": 3631,
    "title": "The Lone Tree 🌳"
   },
   {
@@ -59,7 +59,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 1066,
+   "views": 1068,
    "title": "Neon Frames Home Screen ✨"
   },
   {
@@ -71,7 +71,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 246,
+   "views": 247,
    "title": "Retro Rainbow Curves 🌈"
   },
   {
@@ -83,7 +83,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 244,
+   "views": 245,
    "title": "Flowing Paper Ribbons 🎨"
   },
   {
@@ -95,8 +95,20 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 16,
+   "views": 21,
    "title": "Ember Lake at Dusk ✨"
+  },
+  {
+   "slug": "the-glass-puzzle-cube",
+   "permalink": "https://www.threads.com/@wallspotterr/post/DfY8P7akccg",
+   "date": "2026-11-06",
+   "score": 0,
+   "likes": 0,
+   "replies": 0,
+   "reposts": 0,
+   "quotes": 0,
+   "views": 316,
+   "title": "The Glass Puzzle Cube ✨"
   },
   {
    "slug": "neon-aurora-lock-screen",
@@ -107,7 +119,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 245,
+   "views": 246,
    "title": "Neon Aurora Lock Screen 🌌"
   },
   {
@@ -119,7 +131,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 243,
+   "views": 244,
    "title": "Raindrops on Glass 💧"
   },
   {
@@ -131,7 +143,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 223,
+   "views": 224,
    "title": "Waves Below the Dark 🌊"
   },
   {
@@ -143,7 +155,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 187,
+   "views": 188,
    "title": "Bokeh Orbs 🟠"
   },
   {
@@ -155,7 +167,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 184,
+   "views": 185,
    "title": "Red Balloon Over the Lake 🎈"
   },
   {
@@ -167,7 +179,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 138,
+   "views": 139,
    "title": "The Figure Behind the Glass ✨"
   },
   {
@@ -179,7 +191,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 138,
+   "views": 139,
    "title": "Dark Library Shelf 📚"
   },
   {
@@ -191,7 +203,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 135,
+   "views": 136,
    "title": "Manhattan Under Clouds 🏙️"
   },
   {
@@ -203,7 +215,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 116,
+   "views": 121,
    "title": "The Midnight Sconce ✨"
   },
   {
@@ -215,20 +227,8 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 110,
+   "views": 111,
    "title": "The Captured Singularity ✨"
-  },
-  {
-   "slug": "the-obsidian-skull",
-   "permalink": "https://www.threads.com/@wallspotterr/post/DfUAu5mmw8e",
-   "date": "2026-11-04",
-   "score": 0,
-   "likes": 0,
-   "replies": 0,
-   "reposts": 0,
-   "quotes": 0,
-   "views": 32,
-   "title": "The Obsidian Skull ✨"
   },
   {
    "slug": "the-neon-halo",
@@ -239,7 +239,7 @@
    "replies": 0,
    "reposts": 0,
    "quotes": 0,
-   "views": 30,
+   "views": 51,
    "title": "The Neon Halo ✨"
   }
  ]
