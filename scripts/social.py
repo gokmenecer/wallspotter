@@ -25,6 +25,8 @@ SECRETS = ROOT / "data" / "social-secrets.enc"
 HASHTAGS = "#wallpaper #phonewallpaper #lockscreen #aiart #wallspotter"
 DESKTOP_TAGS = "#wallpaper #desktopwallpaper #4kwallpaper #aiart #wallspotter"
 THREADS_TOPIC = "Wallpaper"
+THREADS_TOPIC_2 = "4K Wallpaper"   # a reply under each Threads post carries this second topic
+REPLY_FROM = "2026-11-10"          # only wallpapers from this date on get that reply
 
 
 # ---------- secrets ----------
@@ -134,6 +136,21 @@ def post_threads(sec, url, text):
     return call("POST", f"{THREADS}/me/threads_publish", creation_id=c, access_token=tok)["id"]
 
 
+def post_threads_reply(sec, url, text, reply_to):
+    """Reply under our own Threads post with the same image, in the second topic."""
+    tok = sec["threads_token"]
+    c = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=url, text=text,
+             reply_to_id=reply_to, topic_tag=THREADS_TOPIC_2, access_token=tok)["id"]
+    for _ in range(30):
+        st = call("GET", f"{THREADS}/{c}", fields="status", access_token=tok).get("status")
+        if st == "FINISHED":
+            break
+        if st in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Threads could not process the reply image ({st})")
+        time.sleep(5)
+    return call("POST", f"{THREADS}/me/threads_publish", creation_id=c, access_token=tok)["id"]
+
+
 PLATFORMS = {"facebook": post_facebook, "instagram": post_instagram, "threads": post_threads}
 
 
@@ -157,7 +174,8 @@ def cmd_post():
     for w in wallpapers():
         done = state.setdefault(w["slug"], {})
         todo = [p for p in PLATFORMS if p not in done]
-        if not todo:
+        need_reply = "threads_4k" not in done and w.get("date", "") >= REPLY_FROM
+        if not todo and not need_reply:
             continue
         wide = is_wide(w)
         url = image_url(w, wide)
@@ -170,6 +188,15 @@ def cmd_post():
             except Exception as e:  # keep going with the other platforms
                 failed = True
                 print(f"::error::{w['slug']} on {p}: {e}")
+        if need_reply and "threads" in done:
+            wide = is_wide(w)
+            url = image_url(w, wide)
+            text = f"Also in {THREADS_TOPIC_2} 🖼️ Free full-res download 👉 wallspotter.com/{w['slug']}"
+            try:
+                done["threads_4k"] = post_threads_reply(sec, url, text, done["threads"])
+                print(f"{w['slug']}: replied on threads in {THREADS_TOPIC_2} ({done['threads_4k']})")
+            except Exception as e:
+                print(f"::warning::{w['slug']} threads reply: {e}")
         STATE.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n")
     if failed:
         sys.exit(1)
