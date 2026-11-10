@@ -24,6 +24,7 @@ STATE = ROOT / "data" / "social-posted.json"
 SECRETS = ROOT / "data" / "social-secrets.enc"
 HASHTAGS = "#wallpaper #phonewallpaper #lockscreen #aiart #wallspotter"
 DESKTOP_TAGS = "#wallpaper #desktopwallpaper #4kwallpaper #aiart #wallspotter"
+THREADS_TOPIC = "Wallpaper"
 
 
 # ---------- secrets ----------
@@ -117,7 +118,12 @@ def post_instagram(sec, url, text):
 
 def post_threads(sec, url, text):
     tok = sec["threads_token"]
-    c = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=url, text=text, access_token=tok)["id"]
+    try:  # put the post in the "Wallpaper" topic
+        c = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=url, text=text,
+                 topic_tag=THREADS_TOPIC, access_token=tok)["id"]
+    except RuntimeError as e:
+        print(f"::warning::Threads topic tag not accepted, posting without it: {e}")
+        c = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=url, text=text, access_token=tok)["id"]
     for _ in range(30):
         st = call("GET", f"{THREADS}/{c}", fields="status", access_token=tok).get("status")
         if st == "FINISHED":
