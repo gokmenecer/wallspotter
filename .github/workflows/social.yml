@@ -11,7 +11,7 @@ on:
       mode:
         description: "post = share new wallpapers, check = test tokens, refresh = renew Threads token, stats = Threads top posts"
         type: choice
-        options: [check, post, refresh, stats]
+        options: [check, post, refresh, stats, engagement]
         default: check
 
 permissions:

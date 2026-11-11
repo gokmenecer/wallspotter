@@ -260,6 +260,26 @@ def cmd_stats():
         print(f"{r['score']:>4}  likes={r['likes']} replies={r['replies']} views={r['views']}  {r['slug'] or r['title']}")
 
 
+def cmd_engagement():
+    """Print Instagram and Facebook likes/comments per wallpaper (read only)."""
+    import re
+    sec = load_secrets(); tok = sec["page_token"]
+    rows, url, params = [], f"{GRAPH}/{IG_USER_ID}/media", dict(fields="caption,like_count,comments_count,timestamp", limit=100, access_token=tok)
+    while url and len(rows) < 300:
+        r = call("GET", url, **params)
+        for m in r.get("data", []):
+            rows.append(("IG", m.get("like_count", 0), m.get("comments_count", 0), m.get("timestamp", "")[:10], (m.get("caption") or "").split("\n")[0][:60]))
+        nxt = (r.get("paging") or {}).get("next")
+        url, params = (nxt.split("?")[0], dict(urllib.parse.parse_qsl(nxt.split("?", 1)[1]))) if nxt else (None, None)
+    r = call("GET", f"{GRAPH}/{FB_PAGE_ID}/posts", fields="message,created_time,reactions.summary(true),comments.summary(true)", limit=100, access_token=tok)
+    for m in r.get("data", []):
+        rows.append(("FB", m.get("reactions", {}).get("summary", {}).get("total_count", 0), m.get("comments", {}).get("summary", {}).get("total_count", 0),
+                     m.get("created_time", "")[:10], (m.get("message") or "").split("\n")[0][:60]))
+    rows.sort(key=lambda x: (x[1] + 2 * x[2]), reverse=True)
+    for x in rows[:25]:
+        print(f"{x[0]} likes={x[1]:>3} comments={x[2]:>3} {x[3]}  {x[4]}")
+
+
 def cmd_daily():
     sec = load_secrets()
     last = sec.get("threads_renewed", "2000-01-01")
@@ -269,4 +289,4 @@ def cmd_daily():
 
 
 if __name__ == "__main__":
-    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
+    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
