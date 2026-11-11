@@ -276,7 +276,7 @@ def cmd_engagement():
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
     for slug, done in state.items():
         pid = done.get("facebook")
-        if not pid:
+        if not pid or not str(pid)[:1].isdigit():
             continue
         try:
             m = call("GET", f"{GRAPH}/{pid}", fields="created_time,reactions.summary(true).limit(0),comments.summary(true).limit(0)", access_token=tok)
