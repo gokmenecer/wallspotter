@@ -271,8 +271,11 @@ def cmd_engagement():
             rows.append(("IG", m.get("like_count", 0), m.get("comments_count", 0), m.get("timestamp", "")[:10], (m.get("caption") or "").split("\n")[0][:60]))
         nxt = (r.get("paging") or {}).get("next")
         url, params = (nxt.split("?")[0], dict(urllib.parse.parse_qsl(nxt.split("?", 1)[1]))) if nxt else (None, None)
-    r = call("GET", f"{GRAPH}/{FB_PAGE_ID}/posts", fields="message,created_time,reactions.summary(true),comments.summary(true)", limit=100, access_token=tok)
-    for m in r.get("data", []):
+    try:
+        fb = call("GET", f"{GRAPH}/{FB_PAGE_ID}/posts", fields="message,created_time,reactions.summary(true),comments.summary(true)", limit=100, access_token=tok).get("data", [])
+    except RuntimeError as e:
+        print("Facebook posts not readable:", str(e)[:120]); fb = []
+    for m in fb:
         rows.append(("FB", m.get("reactions", {}).get("summary", {}).get("total_count", 0), m.get("comments", {}).get("summary", {}).get("total_count", 0),
                      m.get("created_time", "")[:10], (m.get("message") or "").split("\n")[0][:60]))
     rows.sort(key=lambda x: (x[1] + 2 * x[2]), reverse=True)
