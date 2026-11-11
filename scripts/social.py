@@ -268,6 +268,8 @@ def cmd_engagement():
     while url and len(rows) < 300:
         r = call("GET", url, **params)
         for m in r.get("data", []):
+            if m.get("timestamp", "") < "2026-10-01":
+                continue
             rows.append(("IG", m.get("like_count", 0), m.get("comments_count", 0), m.get("timestamp", "")[:10], (m.get("caption") or "").split("\n")[0][:60]))
         nxt = (r.get("paging") or {}).get("next")
         url, params = (nxt.split("?")[0], dict(urllib.parse.parse_qsl(nxt.split("?", 1)[1]))) if nxt else (None, None)
