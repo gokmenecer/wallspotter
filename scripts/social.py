@@ -285,8 +285,11 @@ def cmd_engagement():
         rows.append(("FB", m.get("reactions", {}).get("summary", {}).get("total_count", 0), m.get("comments", {}).get("summary", {}).get("total_count", 0),
                      m.get("created_time", "")[:10], slug))
     rows.sort(key=lambda x: (x[1] + 2 * x[2]), reverse=True)
-    for x in rows[:40]:
-        print(f"{x[0]} likes={x[1]:>3} comments={x[2]:>3} {x[3]}  {x[4]}")
+    for net in ("IG", "FB"):
+        part = [x for x in rows if x[0] == net]
+        print(f"== {net}: {len(part)} posts, {sum(x[1] for x in part)} likes/reactions, {sum(x[2] for x in part)} comments")
+        for x in part[:20]:
+            print(f"{x[0]} likes={x[1]:>3} comments={x[2]:>3} {x[3]}  {x[4]}")
 
 
 def cmd_daily():
