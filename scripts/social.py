@@ -3,6 +3,7 @@
 Runs in GitHub Actions after the site is deployed (see .github/workflows/social.yml).
 
   python scripts/social.py post      share every originals wallpaper not yet in data/social-posted.json
+  python scripts/social.py unpublish delete the posts of wallpapers removed from data/wallpapers.csv
   python scripts/social.py check     only test that the saved tokens still work
   python scripts/social.py refresh   renew the Threads token (it lasts 60 days) and save it again
   python scripts/social.py stats     rank our Threads posts of the last 30 days -> data/threads-top.json
@@ -49,8 +50,8 @@ def save_secrets(sec):
 # ---------- http ----------
 def call(method, endpoint, **params):
     data = urllib.parse.urlencode(params).encode()
-    if method == "GET":
-        req = urllib.request.Request(endpoint + "?" + data.decode())
+    if method in ("GET", "DELETE"):
+        req = urllib.request.Request(endpoint + "?" + data.decode(), method=method)
     else:
         req = urllib.request.Request(endpoint, data=data, method=method)
     try:
@@ -292,6 +293,34 @@ def cmd_engagement():
             print(f"{x[0]} likes={x[1]:>3} comments={x[2]:>3} {x[3]}  {x[4]}")
 
 
+def cmd_unpublish():
+    """Delete the social posts of wallpapers that were removed from data/wallpapers.csv."""
+    sec = load_secrets()
+    state = json.loads(STATE.read_text()) if STATE.exists() else {}
+    with open(ROOT / "data" / "wallpapers.csv", newline="", encoding="utf-8") as f:
+        live = {r["slug"] for r in csv.DictReader(f) if r.get("slug")}
+    targets = {
+        "facebook": (GRAPH, "page_token"), "instagram": (GRAPH, "page_token"),
+        "threads_4k": (THREADS, "threads_token"), "threads": (THREADS, "threads_token"),
+    }
+    for slug in [s for s in state if s not in live]:
+        done = state[slug]
+        for key in ["facebook", "threads_4k", "threads", "instagram"]:
+            pid = done.get(key)
+            if not pid or not str(pid).replace("_", "").isdigit():
+                continue
+            base, tok = targets[key]
+            try:
+                call("DELETE", f"{base}/{pid}", access_token=sec[tok])
+                print(f"{slug}: deleted {key} ({pid})")
+                done.pop(key)
+            except RuntimeError as e:
+                print(f"::warning::{slug}: could not delete {key} ({pid}): {e}")
+        if not done:
+            state.pop(slug)
+    STATE.write_text(json.dumps(state, indent=2, ensure_ascii=False) + "\n")
+
+
 def cmd_daily():
     sec = load_secrets()
     last = sec.get("threads_renewed", "2000-01-01")
@@ -301,4 +330,4 @@ def cmd_daily():
 
 
 if __name__ == "__main__":
-    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
+    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement, "unpublish": cmd_unpublish}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
