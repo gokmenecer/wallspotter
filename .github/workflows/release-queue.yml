@@ -1,0 +1,48 @@
+name: Release scheduled wallpaper
+
+# Night slots, Istanbul time: 20:00, 22:00, 00:00, 02:00, 04:00 (UTC 17, 19, 21, 23, 01).
+# The :33 run is a fallback in case GitHub delays or skips the :03 run.
+on:
+  schedule:
+    - cron: "3,33 17,19,21,23,1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: release-queue
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Release the next due wallpaper
+        id: rel
+        run: python3 scripts/release_queue.py
+
+      - name: Commit and push
+        if: steps.rel.outputs.released != ''
+        run: |
+          git config user.name "kafamsal"
+          git config user.email "gokmenecer@users.noreply.github.com"
+          git add -A data/queue data/queue.json data/wallpapers.csv static/assets/originals
+          git commit -m "Release scheduled wallpaper: ${{ steps.rel.outputs.released }}"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 10; done
+
+      # A push made with GITHUB_TOKEN does not start other workflows, so start the
+      # site build ourselves, wait for it, then run the social share.
+      - name: Build site and share
+        if: steps.rel.outputs.released != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deploy.yml --ref main
+          sleep 20
+          id=$(gh run list --workflow deploy.yml --event workflow_dispatch -L 1 --json databaseId -q '.[0].databaseId')
+          gh run watch "$id" --exit-status || { gh run rerun "$id" --failed; sleep 20; gh run watch "$id" --exit-status; }
+          gh workflow run social.yml --ref main -f mode=post
