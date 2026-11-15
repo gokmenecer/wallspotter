@@ -1,659 +1,656 @@
 {
- "neon-aurora-lock-screen": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "neon-frames-home-screen": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "dark-library-shelf": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "manhattan-under-clouds": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "bokeh-orbs": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "ocean-blue-gradient": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "the-lone-tree": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "red-balloon-over-the-lake": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "layered-dunes": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "midnight-glow-frame": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "waves-below-the-dark": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "retro-rainbow-curves": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "flowing-paper-ribbons": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "raindrops-on-glass": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "beacon-of-the-violet-night": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "the-light-left-on": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "the-watcher-at-dusk": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "moonlit-citadel": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "where-the-moon-waits": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "aurora-over-the-frozen-lake": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "burning-eclipse-desktop": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "burning-eclipse": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "tree-of-two-worlds-blue-gold": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "tree-of-two-worlds-blue-green": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "eclipse-volcano-3": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "eclipse-volcano-2": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "eclipse-volcano-1": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "struck-by-lightning": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "the-unfinished-game": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "rain-on-the-leaf": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "compass-and-candlelight": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "waiting-by-the-clock": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "the-last-stand-misty-mountain": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "minimal-mountains-night": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "minimal-mountains-sunset": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "minimal-mountains-mist": {
-  "facebook": "manual",
-  "instagram": "manual",
-  "threads": "manual"
- },
- "the-figure-behind-the-glass": {
-  "instagram": "18160896613538745",
-  "threads": "18159979609448962",
-  "facebook": "1417764814757989_122103974043528983"
- },
- "the-captured-singularity": {
-  "facebook": "1417764814757989_122103998511528983",
-  "instagram": "18153608101533286",
-  "threads": "17885254812526260"
- },
- "galaxy-in-the-geode": {
-  "facebook": "1417764814757989_122104306203528983",
-  "instagram": "17980519278132046",
-  "threads": "18035767232897594"
- },
- "the-obsidian-skull": {
-  "facebook": "1417764814757989_122104317663528983",
-  "instagram": "18363169801247363",
-  "threads": "18347804926254871"
- },
- "the-ember-hourglass": {
-  "facebook": "1417764814757989_122104361367528983",
-  "instagram": "18028105937877284",
-  "threads": "17904883920603097"
- },
- "the-frozen-rose": {
-  "facebook": "1417764814757989_122104471977528983",
-  "instagram": "18479734636118658",
-  "threads": "18052568369606024"
- },
- "the-midnight-sconce": {
-  "facebook": "1417764814757989_122104612719528983",
-  "instagram": "17950792443084102",
-  "threads": "17992292526108632"
- },
- "cosmic-neural-bloom": {
-  "facebook": "1417764814757989_122104853685528983",
-  "instagram": "18436823809151757",
-  "threads": "18118321028114120"
- },
- "rails-to-the-last-light": {
-  "facebook": "1417764814757989_122105190555528983",
-  "instagram": "18099363998418575",
-  "threads": "18030961496696764"
- },
- "ember-lake-at-dusk": {
-  "facebook": "1417764814757989_122105440575528983",
-  "instagram": "17873092230647637",
-  "threads": "18106511561367813"
- },
- "the-empty-stage": {
-  "facebook": "1417764814757989_122105453091528983",
-  "instagram": "18217787713361380",
-  "threads": "18098010521673634"
- },
- "the-neon-halo": {
-  "facebook": "1417764814757989_122105472135528983",
-  "instagram": "18119583860046831",
-  "threads": "18151517308480459"
- },
- "the-sapphire-globe": {
-  "facebook": "1417764814757989_122105527023528983",
-  "instagram": "17887654134623540",
-  "threads": "18116355521155602"
- },
- "the-glass-puzzle-cube": {
-  "facebook": "1417764814757989_122105824665528983",
-  "instagram": "18114008003229507",
-  "threads": "18097318175661380"
- },
- "the-glass-tide": {
-  "facebook": "1417764814757989_122105915613528983",
-  "instagram": "17880667515633309",
-  "threads": "17921299725463027"
- },
- "the-velvet-folds": {
-  "facebook": "1417764814757989_122105984979528983",
-  "instagram": "18155243365555216",
-  "threads": "17949157599072545"
- },
- "the-curious-giraffe": {
-  "facebook": "1417764814757989_122106105543528983",
-  "instagram": "18651418528040087",
-  "threads": "17997084687021198"
- },
- "smile-pins-on-linen": {
-  "facebook": "1417764814757989_122106354267528983",
-  "instagram": "18120513626063876",
-  "threads": "18323772652303774"
- },
- "the-lamplit-wall": {
-  "facebook": "1417764814757989_122106433851528983",
-  "instagram": "18117392936126250",
-  "threads": "18119560844011017"
- },
- "the-moth-in-the-prism": {
-  "facebook": "1417764814757989_122106460173528983",
-  "instagram": "18126773848890097",
-  "threads": "18107954786343313"
- },
- "the-marble-muse": {
-  "facebook": "1417764814757989_122106516387528983",
-  "instagram": "18105576737365110",
-  "threads": "18483390613115919"
- },
- "the-wanderers-hat": {
-  "facebook": "1417764814757989_122106790719528983",
-  "threads": "18176553457409930",
-  "instagram": "18030967886873399"
- },
- "the-blue-groove": {
-  "facebook": "1417764814757989_122106823533528983",
-  "instagram": "18031550222885354",
-  "threads": "17976084849172176"
- },
- "the-bronze-knot": {
-  "facebook": "1417764814757989_122106875973528983",
-  "instagram": "18078763169460236",
-  "threads": "18158817106515450"
- },
- "the-amber-river": {
-  "facebook": "1417764814757989_122106944301528983",
-  "instagram": "18137582441495738",
-  "threads": "18099445961452385"
- },
- "the-veneer-ridge": {
-  "facebook": "1417764814757989_122107226421528983",
-  "instagram": "18025835810706765",
-  "threads": "17956252566296856"
- },
- "the-halo-recess": {
-  "facebook": "1417764814757989_122107271943528983",
-  "instagram": "18378954118300737",
-  "threads": "18489663886113465"
- },
- "the-bell-jar-valley": {
-  "facebook": "1417764814757989_122107340109528983",
-  "instagram": "18400323307163090",
-  "threads": "18113847337882083"
- },
- "cloud-mind-at-dusk": {
-  "facebook": "1417764814757989_122107352073528983",
-  "instagram": "18031469480880918",
-  "threads": "18117958718020262"
- },
- "rain-soaked-reverie": {
-  "facebook": "1417764814757989_122107352403528983",
-  "instagram": "17933954409161812",
-  "threads": "18065453318549570"
- },
- "the-sunset-within": {
-  "facebook": "1417764814757989_122107364121528983",
-  "instagram": "18134949553866188",
-  "threads": "18131721064840249"
- },
- "the-offset-tiles": {
-  "facebook": "1417764814757989_122107403715528983",
-  "instagram": "18025762928715766",
-  "threads": "17933631012421327"
- },
- "paper-hills-at-dawn": {
-  "facebook": "1417764814757989_122107503855528983",
-  "instagram": "18346679803287706",
-  "threads": "18193990081406418"
- },
- "frosted-indigo-swells": {
-  "facebook": "1417764814757989_122107654173528983",
-  "instagram": "18118171673468586",
-  "threads": "18248705152314071",
-  "threads_4k": "18162432934503228"
- },
- "the-terracotta-arches": {
-  "facebook": "1417764814757989_122107705149528983",
-  "instagram": "18137970908478739",
-  "threads": "18414737590094703",
-  "threads_4k": "18116499824174654"
- },
- "the-brass-orrery": {
-  "facebook": "1417764814757989_122107760907528983",
-  "instagram": "17925165045220358",
-  "threads": "18173620894484939",
-  "threads_4k": "18081469193718644"
- },
- "the-ember-grille": {
-  "facebook": "1417764814757989_122107812741528983",
-  "instagram": "18131148643893476",
-  "threads": "18148862224594818",
-  "threads_4k": "18115458845177101"
- },
- "the-drifting-lantern": {
-  "facebook": "1417764814757989_122107865883528983",
-  "instagram": "18026703512936474",
-  "threads": "17914747134486144",
-  "threads_4k": "18060527714799442"
- },
- "ripple-tiles": {
-  "facebook": "1417764814757989_122107927299528983",
-  "instagram": "18062435684549873",
-  "threads": "18015220625991137",
-  "threads_4k": "18099351986661795"
- },
- "starlit-valley": {
-  "facebook": "1417764814757989_122107938993528983",
-  "instagram": "18007776272794714",
-  "threads": "18110823545461315",
-  "threads_4k": "17922794799463816"
- },
- "misty-valley": {
-  "facebook": "1417764814757989_122107939347528983",
-  "instagram": "18102177719374674",
-  "threads": "18036017675849957",
-  "threads_4k": "18189888970416768"
- },
- "rainbow-arches": {
-  "facebook": "1417764814757989_122107939551528983",
-  "instagram": "18080783933550737",
-  "threads": "18142600393619103",
-  "threads_4k": "17965558101248015"
- },
- "pastel-floating-cubes": {
-  "facebook": "1417764814757989_122107939797528983",
-  "instagram": "18116109275590540",
-  "threads": "18095984468181479",
-  "threads_4k": "18112490312190822"
- },
- "pearl-and-gold-orbs": {
-  "facebook": "1417764814757989_122107940091528983",
-  "instagram": "18120003454788213",
-  "threads": "18160791496511533",
-  "threads_4k": "18128395225899158"
- },
- "blue-paper-waves": {
-  "facebook": "1417764814757989_122107940403528983",
-  "instagram": "18154197520553974",
-  "threads": "18201144754387636",
-  "threads_4k": "17995324059100057"
- },
- "infinite-portal": {
-  "facebook": "1417764814757989_122107940931528983",
-  "instagram": "18141732406713928",
-  "threads": "18119191246817806",
-  "threads_4k": "18038421131854083"
- },
- "minimal-mountains-golden-hour": {
-  "facebook": "1417764814757989_122107941327528983",
-  "instagram": "18029071178912778",
-  "threads": "17948970276357331",
-  "threads_4k": "18127884095310022"
- },
- "minimal-mountains-forest-mist": {
-  "facebook": "1417764814757989_122107941819528983",
-  "instagram": "18142919524615768",
-  "threads": "18145980334608960",
-  "threads_4k": "17970676581214453"
- },
- "minimal-mountains-dawn": {
-  "facebook": "1417764814757989_122107942077528983",
-  "instagram": "18131214868837029",
-  "threads": "18078873986446538",
-  "threads_4k": "18141505312628647"
- },
- "ring-of-light-on-still-water": {
-  "facebook": "1417764814757989_122108057367528983",
-  "instagram": "18639625477027107",
-  "threads": "18148251184602119",
-  "threads_4k": "18119775296325916"
- },
- "neon-halo-ring": {
-  "facebook": "1417764814757989_122108063847528983",
-  "instagram": "18134202658774295",
-  "threads": "18201331234388223",
-  "threads_4k": "18131632642830900"
- },
- "neon-orbits": {
-  "facebook": "1417764814757989_122108064165528983",
-  "instagram": "17893037400684536",
-  "threads": "18176687410460144",
-  "threads_4k": "17957796267337504"
- },
- "neon-prism": {
-  "facebook": "1417764814757989_122108064525528983",
-  "instagram": "18104444138547665",
-  "threads": "17994807416851499",
-  "threads_4k": "17909859714656642"
- },
- "neon-ripples": {
-  "facebook": "1417764814757989_122108064753528983",
-  "instagram": "17875899009601473",
-  "threads": "17979869183987541",
-  "threads_4k": "17916105969513728"
- },
- "neon-saturn": {
-  "facebook": "1417764814757989_122108064927528983",
-  "instagram": "17935703631413216",
-  "threads": "18075048473489890",
-  "threads_4k": "18082019543723529"
- },
- "neon-hex-gate": {
-  "facebook": "1417764814757989_122108065239528983",
-  "instagram": "18124827940987311",
-  "threads": "17916391740280183",
-  "threads_4k": "18146107162589998"
- },
- "neon-arch": {
-  "facebook": "1417764814757989_122108065521528983",
-  "instagram": "18044996663837559",
-  "threads": "18098963819243661",
-  "threads_4k": "18121188668069023"
- },
- "neon-eclipse-ring": {
-  "facebook": "1417764814757989_122108065737528983",
-  "instagram": "18065679392523823",
-  "threads": "18002791902042845",
-  "threads_4k": "18118043443861209"
- },
- "twilight-teal-gradient": {
-  "facebook": "1417764814757989_122108066031528983",
-  "instagram": "18417440422081138",
-  "threads": "18355778869281773",
-  "threads_4k": "17927655924440323"
- },
- "the-midnight-compass": {
-  "facebook": "1417764814757989_122108104215528983",
-  "instagram": "18096479906158579",
-  "threads": "18116436521136369",
-  "threads_4k": "18486721165115459"
- },
- "the-koi-pond": {
-  "facebook": "1417764814757989_122108151801528983",
-  "instagram": "18108811277457558",
-  "threads": "18116344139334644",
-  "threads_4k": "17937067188199572"
- },
- "layered-walnut-globe": {
-  "facebook": "1417764814757989_122108164401528983",
-  "instagram": "18126813554313997",
-  "threads": "17895875733436071",
-  "threads_4k": "17952342207305180"
- },
- "the-glass-jellyfish": {
-  "facebook": "1417764814757989_122108247069528983",
-  "instagram": "18059908895567397",
-  "threads": "18380767027214996",
-  "threads_4k": "18054345722812538"
- },
- "the-way-home": {
-  "facebook": "1417764814757989_122108415891528983",
-  "instagram": "17934186636165103",
-  "threads": "18119683285799722",
-  "threads_4k": "18208284211374304"
- },
- "ocean-in-a-glass-globe": {
-  "facebook": "1417764814757989_122108498619528983",
-  "instagram": "18157424986537170",
-  "threads": "18635516617025454",
-  "threads_4k": "18134309341772905"
- },
- "stairway-to-the-amber-door": {
-  "facebook": "1417764814757989_122108504193528983",
-  "instagram": "17944735086101351",
-  "threads": "18129940054908709",
-  "threads_4k": "18084711395403045"
- },
- "brass-sconce-on-teal-brick": {
-  "facebook": "1417764814757989_122108513757528983",
-  "instagram": "17957170908276781",
-  "threads": "18115219946143098",
-  "threads_4k": "17905197174602707"
- },
- "rose-behind-rain-glass": {
-  "facebook": "1417764814757989_122108632371528983",
-  "instagram": "18212436481317868",
-  "threads": "17963997395998767",
-  "threads_4k": "18430673677149241"
- },
- "balloon-above-paper-clouds": {
-  "facebook": "1417764814757989_122108825433528983",
-  "instagram": "17905807935601612",
-  "threads": "18040110185843392",
-  "threads_4k": "18139945771642776"
- },
- "velvet-dusk-waves": {
-  "facebook": "1417764814757989_122108886039528983",
-  "instagram": "18196599481402113",
-  "threads": "18215591383366692",
-  "threads_4k": "17922434961242919"
- },
- "navy-suede-fan": {
-  "facebook": "1417764814757989_122108889963528983",
-  "instagram": "18126971407694707",
-  "threads": "17902494834655610",
-  "threads_4k": "18222970138342517"
- },
- "brass-telescope-at-blue-hour": {
-  "facebook": "1417764814757989_122108937543528983",
-  "instagram": "18071737388782370",
-  "threads": "17877057198592754",
-  "threads_4k": "18132712927836493"
- },
- "dandelion-in-blue-hour": {
-  "facebook": "1417764814757989_122109120549528983",
-  "instagram": "18080978237411904",
-  "threads": "17900966394613121",
-  "threads_4k": "18120633209011724"
- },
- "cherry-blossom-drift": {
-  "facebook": "1417764814757989_122109144003528983",
-  "instagram": "18081852932416716",
-  "threads": "17943111513400461",
-  "threads_4k": "17993771159858478"
- },
- "the-last-king": {
-  "facebook": "1417764814757989_122109183915528983",
-  "instagram": "18390975496226103",
-  "threads": "18361810132222289",
-  "threads_4k": "18120355948955546"
- },
- "cobalt-ceramic-rings": {
-  "facebook": "1417764814757989_122109233955528983",
-  "instagram": "17996082387099697",
-  "threads": "17960813478256886",
-  "threads_4k": "18111924545097310"
- },
- "midnight-gramophone": {
-  "facebook": "1417764814757989_122109245637528983",
-  "instagram": "18135452458813908",
-  "threads": "17882392701554010",
-  "threads_4k": "18020317409957278"
- },
- "whale-in-the-blue-light": {
-  "facebook": "1417764814757989_122109337395528983",
-  "instagram": "18099223748541175",
-  "threads": "18388907239228428",
-  "threads_4k": "17898743172654631"
- },
- "first-snow-on-a-lone-pine": {
-  "facebook": "1417764814757989_122109493743528983",
-  "instagram": "18029849024702804",
-  "threads": "18648017455015391",
-  "threads_4k": "17995277090851949"
- },
- "lighthouse-at-blue-hour": {
-  "facebook": "1417764814757989_122109532341528983",
-  "instagram": "17922733881244772",
-  "threads": "17960610723257869",
-  "threads_4k": "18170178724489028"
- },
- "golden-ring-over-the-sea": {
-  "facebook": "1417764814757989_122109551865528983",
-  "instagram": "18133480072885164",
-  "threads": "18121959304991950",
-  "threads_4k": "17917058865548662"
- },
- "desert-gate-of-light": {
-  "facebook": "1417764814757989_122109553629528983",
-  "instagram": "18133249798696824",
-  "threads": "18114762842129031",
-  "threads_4k": "17999292078013018"
- },
- "hooded-watcher-eclipse-ring": {
-  "facebook": "1417764814757989_122109554979528983",
-  "instagram": "17955759978299231",
-  "threads": "18192467518408009",
-  "threads_4k": "17926808817443579"
- },
- "neon-ring-over-dark-water": {
-  "facebook": "1417764814757989_122109555321528983",
-  "instagram": "17910499113332090",
-  "threads": "18380143720214651",
-  "threads_4k": "17931617103181107"
- },
- "ember-sound-wave-portal": {
-  "facebook": "1417764814757989_122109555567528983",
-  "instagram": "17916766341486300",
-  "threads": "18127110826924561",
-  "threads_4k": "18119017877030450"
- }
+  "neon-aurora-lock-screen": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "neon-frames-home-screen": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "dark-library-shelf": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "manhattan-under-clouds": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "bokeh-orbs": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "ocean-blue-gradient": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "the-lone-tree": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "red-balloon-over-the-lake": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "layered-dunes": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "midnight-glow-frame": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "waves-below-the-dark": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "retro-rainbow-curves": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "flowing-paper-ribbons": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "raindrops-on-glass": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "beacon-of-the-violet-night": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "the-light-left-on": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "the-watcher-at-dusk": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "moonlit-citadel": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "where-the-moon-waits": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "aurora-over-the-frozen-lake": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "burning-eclipse-desktop": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "burning-eclipse": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "tree-of-two-worlds-blue-gold": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "tree-of-two-worlds-blue-green": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "eclipse-volcano-3": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "eclipse-volcano-2": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "eclipse-volcano-1": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "struck-by-lightning": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "the-unfinished-game": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "rain-on-the-leaf": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "compass-and-candlelight": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "waiting-by-the-clock": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "the-last-stand-misty-mountain": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "minimal-mountains-night": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "minimal-mountains-sunset": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "minimal-mountains-mist": {
+    "facebook": "manual",
+    "instagram": "manual",
+    "threads": "manual"
+  },
+  "the-figure-behind-the-glass": {
+    "instagram": "18160896613538745",
+    "threads": "18159979609448962",
+    "facebook": "1417764814757989_122103974043528983"
+  },
+  "the-captured-singularity": {
+    "facebook": "1417764814757989_122103998511528983",
+    "instagram": "18153608101533286",
+    "threads": "17885254812526260"
+  },
+  "galaxy-in-the-geode": {
+    "facebook": "1417764814757989_122104306203528983",
+    "instagram": "17980519278132046",
+    "threads": "18035767232897594"
+  },
+  "the-obsidian-skull": {
+    "facebook": "1417764814757989_122104317663528983",
+    "instagram": "18363169801247363",
+    "threads": "18347804926254871"
+  },
+  "the-ember-hourglass": {
+    "facebook": "1417764814757989_122104361367528983",
+    "instagram": "18028105937877284",
+    "threads": "17904883920603097"
+  },
+  "the-frozen-rose": {
+    "facebook": "1417764814757989_122104471977528983",
+    "instagram": "18479734636118658",
+    "threads": "18052568369606024"
+  },
+  "the-midnight-sconce": {
+    "facebook": "1417764814757989_122104612719528983",
+    "instagram": "17950792443084102",
+    "threads": "17992292526108632"
+  },
+  "cosmic-neural-bloom": {
+    "facebook": "1417764814757989_122104853685528983",
+    "instagram": "18436823809151757",
+    "threads": "18118321028114120"
+  },
+  "rails-to-the-last-light": {
+    "facebook": "1417764814757989_122105190555528983",
+    "instagram": "18099363998418575",
+    "threads": "18030961496696764"
+  },
+  "ember-lake-at-dusk": {
+    "facebook": "1417764814757989_122105440575528983",
+    "instagram": "17873092230647637",
+    "threads": "18106511561367813"
+  },
+  "the-empty-stage": {
+    "facebook": "1417764814757989_122105453091528983",
+    "instagram": "18217787713361380",
+    "threads": "18098010521673634"
+  },
+  "the-neon-halo": {
+    "facebook": "1417764814757989_122105472135528983",
+    "instagram": "18119583860046831",
+    "threads": "18151517308480459"
+  },
+  "the-sapphire-globe": {
+    "facebook": "1417764814757989_122105527023528983",
+    "instagram": "17887654134623540",
+    "threads": "18116355521155602"
+  },
+  "the-glass-puzzle-cube": {
+    "facebook": "1417764814757989_122105824665528983",
+    "instagram": "18114008003229507",
+    "threads": "18097318175661380"
+  },
+  "the-glass-tide": {
+    "facebook": "1417764814757989_122105915613528983",
+    "instagram": "17880667515633309",
+    "threads": "17921299725463027"
+  },
+  "the-velvet-folds": {
+    "facebook": "1417764814757989_122105984979528983",
+    "instagram": "18155243365555216",
+    "threads": "17949157599072545"
+  },
+  "the-curious-giraffe": {
+    "facebook": "1417764814757989_122106105543528983",
+    "instagram": "18651418528040087",
+    "threads": "17997084687021198"
+  },
+  "smile-pins-on-linen": {
+    "facebook": "1417764814757989_122106354267528983",
+    "instagram": "18120513626063876",
+    "threads": "18323772652303774"
+  },
+  "the-lamplit-wall": {
+    "facebook": "1417764814757989_122106433851528983",
+    "instagram": "18117392936126250",
+    "threads": "18119560844011017"
+  },
+  "the-moth-in-the-prism": {
+    "facebook": "1417764814757989_122106460173528983",
+    "instagram": "18126773848890097",
+    "threads": "18107954786343313"
+  },
+  "the-marble-muse": {
+    "facebook": "1417764814757989_122106516387528983",
+    "instagram": "18105576737365110",
+    "threads": "18483390613115919"
+  },
+  "the-wanderers-hat": {
+    "facebook": "1417764814757989_122106790719528983",
+    "threads": "18176553457409930",
+    "instagram": "18030967886873399"
+  },
+  "the-blue-groove": {
+    "facebook": "1417764814757989_122106823533528983",
+    "instagram": "18031550222885354",
+    "threads": "17976084849172176"
+  },
+  "the-bronze-knot": {
+    "facebook": "1417764814757989_122106875973528983",
+    "instagram": "18078763169460236",
+    "threads": "18158817106515450"
+  },
+  "the-amber-river": {
+    "facebook": "1417764814757989_122106944301528983",
+    "instagram": "18137582441495738",
+    "threads": "18099445961452385"
+  },
+  "the-veneer-ridge": {
+    "facebook": "1417764814757989_122107226421528983",
+    "instagram": "18025835810706765",
+    "threads": "17956252566296856"
+  },
+  "the-halo-recess": {
+    "facebook": "1417764814757989_122107271943528983",
+    "instagram": "18378954118300737",
+    "threads": "18489663886113465"
+  },
+  "the-bell-jar-valley": {
+    "facebook": "1417764814757989_122107340109528983",
+    "instagram": "18400323307163090",
+    "threads": "18113847337882083"
+  },
+  "cloud-mind-at-dusk": {
+    "facebook": "1417764814757989_122107352073528983",
+    "instagram": "18031469480880918",
+    "threads": "18117958718020262"
+  },
+  "rain-soaked-reverie": {
+    "facebook": "1417764814757989_122107352403528983",
+    "instagram": "17933954409161812",
+    "threads": "18065453318549570"
+  },
+  "the-sunset-within": {
+    "facebook": "1417764814757989_122107364121528983",
+    "instagram": "18134949553866188",
+    "threads": "18131721064840249"
+  },
+  "the-offset-tiles": {
+    "facebook": "1417764814757989_122107403715528983",
+    "instagram": "18025762928715766",
+    "threads": "17933631012421327"
+  },
+  "paper-hills-at-dawn": {
+    "facebook": "1417764814757989_122107503855528983",
+    "instagram": "18346679803287706",
+    "threads": "18193990081406418"
+  },
+  "frosted-indigo-swells": {
+    "facebook": "1417764814757989_122107654173528983",
+    "instagram": "18118171673468586",
+    "threads": "18248705152314071",
+    "threads_4k": "18162432934503228"
+  },
+  "the-terracotta-arches": {
+    "facebook": "1417764814757989_122107705149528983",
+    "instagram": "18137970908478739",
+    "threads": "18414737590094703",
+    "threads_4k": "18116499824174654"
+  },
+  "the-brass-orrery": {
+    "facebook": "1417764814757989_122107760907528983",
+    "instagram": "17925165045220358",
+    "threads": "18173620894484939",
+    "threads_4k": "18081469193718644"
+  },
+  "the-ember-grille": {
+    "facebook": "1417764814757989_122107812741528983",
+    "instagram": "18131148643893476",
+    "threads": "18148862224594818",
+    "threads_4k": "18115458845177101"
+  },
+  "the-drifting-lantern": {
+    "facebook": "1417764814757989_122107865883528983",
+    "instagram": "18026703512936474",
+    "threads": "17914747134486144",
+    "threads_4k": "18060527714799442"
+  },
+  "ripple-tiles": {
+    "facebook": "1417764814757989_122107927299528983",
+    "instagram": "18062435684549873",
+    "threads": "18015220625991137",
+    "threads_4k": "18099351986661795"
+  },
+  "starlit-valley": {
+    "facebook": "1417764814757989_122107938993528983",
+    "instagram": "18007776272794714",
+    "threads": "18110823545461315",
+    "threads_4k": "17922794799463816"
+  },
+  "misty-valley": {
+    "facebook": "1417764814757989_122107939347528983",
+    "instagram": "18102177719374674",
+    "threads": "18036017675849957",
+    "threads_4k": "18189888970416768"
+  },
+  "rainbow-arches": {
+    "facebook": "1417764814757989_122107939551528983",
+    "instagram": "18080783933550737",
+    "threads": "18142600393619103",
+    "threads_4k": "17965558101248015"
+  },
+  "pastel-floating-cubes": {
+    "facebook": "1417764814757989_122107939797528983",
+    "instagram": "18116109275590540",
+    "threads": "18095984468181479",
+    "threads_4k": "18112490312190822"
+  },
+  "pearl-and-gold-orbs": {
+    "facebook": "1417764814757989_122107940091528983",
+    "instagram": "18120003454788213",
+    "threads": "18160791496511533",
+    "threads_4k": "18128395225899158"
+  },
+  "blue-paper-waves": {
+    "facebook": "1417764814757989_122107940403528983",
+    "instagram": "18154197520553974",
+    "threads": "18201144754387636",
+    "threads_4k": "17995324059100057"
+  },
+  "infinite-portal": {
+    "facebook": "1417764814757989_122107940931528983",
+    "instagram": "18141732406713928",
+    "threads": "18119191246817806",
+    "threads_4k": "18038421131854083"
+  },
+  "minimal-mountains-golden-hour": {
+    "facebook": "1417764814757989_122107941327528983",
+    "instagram": "18029071178912778",
+    "threads": "17948970276357331",
+    "threads_4k": "18127884095310022"
+  },
+  "minimal-mountains-forest-mist": {
+    "facebook": "1417764814757989_122107941819528983",
+    "instagram": "18142919524615768",
+    "threads": "18145980334608960",
+    "threads_4k": "17970676581214453"
+  },
+  "minimal-mountains-dawn": {
+    "facebook": "1417764814757989_122107942077528983",
+    "instagram": "18131214868837029",
+    "threads": "18078873986446538",
+    "threads_4k": "18141505312628647"
+  },
+  "ring-of-light-on-still-water": {
+    "facebook": "1417764814757989_122108057367528983",
+    "instagram": "18639625477027107",
+    "threads": "18148251184602119",
+    "threads_4k": "18119775296325916"
+  },
+  "neon-halo-ring": {
+    "facebook": "1417764814757989_122108063847528983",
+    "instagram": "18134202658774295",
+    "threads": "18201331234388223",
+    "threads_4k": "18131632642830900"
+  },
+  "neon-orbits": {
+    "facebook": "1417764814757989_122108064165528983",
+    "instagram": "17893037400684536",
+    "threads": "18176687410460144",
+    "threads_4k": "17957796267337504"
+  },
+  "neon-prism": {
+    "facebook": "1417764814757989_122108064525528983",
+    "instagram": "18104444138547665",
+    "threads": "17994807416851499",
+    "threads_4k": "17909859714656642"
+  },
+  "neon-ripples": {
+    "facebook": "1417764814757989_122108064753528983",
+    "instagram": "17875899009601473",
+    "threads": "17979869183987541",
+    "threads_4k": "17916105969513728"
+  },
+  "neon-saturn": {
+    "facebook": "1417764814757989_122108064927528983",
+    "instagram": "17935703631413216",
+    "threads": "18075048473489890",
+    "threads_4k": "18082019543723529"
+  },
+  "neon-hex-gate": {
+    "facebook": "1417764814757989_122108065239528983",
+    "instagram": "18124827940987311",
+    "threads": "17916391740280183",
+    "threads_4k": "18146107162589998"
+  },
+  "neon-arch": {
+    "facebook": "1417764814757989_122108065521528983",
+    "instagram": "18044996663837559",
+    "threads": "18098963819243661",
+    "threads_4k": "18121188668069023"
+  },
+  "neon-eclipse-ring": {
+    "facebook": "1417764814757989_122108065737528983",
+    "instagram": "18065679392523823",
+    "threads": "18002791902042845",
+    "threads_4k": "18118043443861209"
+  },
+  "twilight-teal-gradient": {
+    "facebook": "1417764814757989_122108066031528983",
+    "instagram": "18417440422081138",
+    "threads": "18355778869281773",
+    "threads_4k": "17927655924440323"
+  },
+  "the-midnight-compass": {
+    "facebook": "1417764814757989_122108104215528983",
+    "instagram": "18096479906158579",
+    "threads": "18116436521136369",
+    "threads_4k": "18486721165115459"
+  },
+  "the-koi-pond": {
+    "facebook": "1417764814757989_122108151801528983",
+    "instagram": "18108811277457558",
+    "threads": "18116344139334644",
+    "threads_4k": "17937067188199572"
+  },
+  "layered-walnut-globe": {
+    "facebook": "1417764814757989_122108164401528983",
+    "instagram": "18126813554313997",
+    "threads": "17895875733436071",
+    "threads_4k": "17952342207305180"
+  },
+  "the-glass-jellyfish": {
+    "facebook": "1417764814757989_122108247069528983",
+    "instagram": "18059908895567397",
+    "threads": "18380767027214996",
+    "threads_4k": "18054345722812538"
+  },
+  "the-way-home": {
+    "facebook": "1417764814757989_122108415891528983",
+    "instagram": "17934186636165103",
+    "threads": "18119683285799722",
+    "threads_4k": "18208284211374304"
+  },
+  "ocean-in-a-glass-globe": {
+    "facebook": "1417764814757989_122108498619528983",
+    "instagram": "18157424986537170",
+    "threads": "18635516617025454",
+    "threads_4k": "18134309341772905"
+  },
+  "stairway-to-the-amber-door": {
+    "facebook": "1417764814757989_122108504193528983",
+    "instagram": "17944735086101351",
+    "threads": "18129940054908709",
+    "threads_4k": "18084711395403045"
+  },
+  "brass-sconce-on-teal-brick": {
+    "facebook": "1417764814757989_122108513757528983",
+    "instagram": "17957170908276781",
+    "threads": "18115219946143098",
+    "threads_4k": "17905197174602707"
+  },
+  "rose-behind-rain-glass": {
+    "facebook": "1417764814757989_122108632371528983",
+    "instagram": "18212436481317868",
+    "threads": "17963997395998767",
+    "threads_4k": "18430673677149241"
+  },
+  "balloon-above-paper-clouds": {
+    "facebook": "1417764814757989_122108825433528983",
+    "instagram": "17905807935601612",
+    "threads": "18040110185843392",
+    "threads_4k": "18139945771642776"
+  },
+  "velvet-dusk-waves": {
+    "facebook": "1417764814757989_122108886039528983",
+    "instagram": "18196599481402113",
+    "threads": "18215591383366692",
+    "threads_4k": "17922434961242919"
+  },
+  "navy-suede-fan": {
+    "facebook": "1417764814757989_122108889963528983",
+    "instagram": "18126971407694707",
+    "threads": "17902494834655610",
+    "threads_4k": "18222970138342517"
+  },
+  "brass-telescope-at-blue-hour": {
+    "facebook": "1417764814757989_122108937543528983",
+    "instagram": "18071737388782370",
+    "threads": "17877057198592754",
+    "threads_4k": "18132712927836493"
+  },
+  "dandelion-in-blue-hour": {
+    "facebook": "1417764814757989_122109120549528983",
+    "instagram": "18080978237411904",
+    "threads": "17900966394613121",
+    "threads_4k": "18120633209011724"
+  },
+  "cherry-blossom-drift": {
+    "facebook": "1417764814757989_122109144003528983",
+    "instagram": "18081852932416716",
+    "threads": "17943111513400461",
+    "threads_4k": "17993771159858478"
+  },
+  "the-last-king": {
+    "facebook": "1417764814757989_122109183915528983",
+    "instagram": "18390975496226103",
+    "threads": "18361810132222289",
+    "threads_4k": "18120355948955546"
+  },
+  "cobalt-ceramic-rings": {
+    "facebook": "1417764814757989_122109233955528983",
+    "instagram": "17996082387099697",
+    "threads": "17960813478256886",
+    "threads_4k": "18111924545097310"
+  },
+  "midnight-gramophone": {
+    "facebook": "1417764814757989_122109245637528983",
+    "instagram": "18135452458813908",
+    "threads": "17882392701554010",
+    "threads_4k": "18020317409957278"
+  },
+  "whale-in-the-blue-light": {
+    "facebook": "1417764814757989_122109337395528983",
+    "instagram": "18099223748541175",
+    "threads": "18388907239228428",
+    "threads_4k": "17898743172654631"
+  },
+  "first-snow-on-a-lone-pine": {
+    "facebook": "1417764814757989_122109493743528983",
+    "instagram": "18029849024702804",
+    "threads": "18648017455015391",
+    "threads_4k": "17995277090851949"
+  },
+  "lighthouse-at-blue-hour": {
+    "facebook": "1417764814757989_122109532341528983",
+    "instagram": "17922733881244772",
+    "threads": "17960610723257869",
+    "threads_4k": "18170178724489028"
+  },
+  "golden-ring-over-the-sea": {
+    "facebook": "1417764814757989_122109551865528983",
+    "instagram": "18133480072885164",
+    "threads": "18121959304991950",
+    "threads_4k": "17917058865548662"
+  },
+  "desert-gate-of-light": {
+    "facebook": "1417764814757989_122109553629528983",
+    "instagram": "18133249798696824",
+    "threads": "18114762842129031",
+    "threads_4k": "17999292078013018"
+  },
+  "hooded-watcher-eclipse-ring": {
+    "instagram": "17955759978299231",
+    "threads": "18192467518408009",
+    "threads_4k": "17926808817443579"
+  },
+  "neon-ring-over-dark-water": {
+    "instagram": "17910499113332090",
+    "threads": "18380143720214651",
+    "threads_4k": "17931617103181107"
+  },
+  "ember-sound-wave-portal": {
+    "instagram": "17916766341486300",
+    "threads": "18127110826924561",
+    "threads_4k": "18119017877030450"
+  }
 }
