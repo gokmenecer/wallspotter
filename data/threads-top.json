@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17",
+ "updated": "2026-11-18",
  "window_days": 30,
  "posts": [
   {
@@ -71,7 +71,7 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 0,
-   "views": 292,
+   "views": 294,
    "title": "Neon Halo Ring ✨"
   },
   {
@@ -83,7 +83,7 @@
    "replies": 2,
    "reposts": 0,
    "quotes": 0,
-   "views": 116,
+   "views": 118,
    "title": "First Snow on a Lone Pine ✨"
   },
   {
@@ -95,7 +95,7 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 1,
-   "views": 79,
+   "views": 80,
    "title": "The Drifting Lantern ✨"
   },
   {
@@ -131,7 +131,7 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 0,
-   "views": 258,
+   "views": 260,
    "title": "Velvet Dusk Waves ✨"
   },
   {
@@ -143,7 +143,7 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 0,
-   "views": 165,
+   "views": 167,
    "title": "Rose Behind Rain Glass ✨"
   },
   {
@@ -155,8 +155,32 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 0,
-   "views": 99,
+   "views": 100,
    "title": "Balloon Above Paper Clouds ✨"
+  },
+  {
+   "slug": "lone-walker-before-the-giant-wave",
+   "permalink": "https://www.threads.com/@wallspotterr/post/Df3JEApmdp9",
+   "date": "2026-11-17",
+   "score": 3,
+   "likes": 1,
+   "replies": 1,
+   "reposts": 0,
+   "quotes": 0,
+   "views": 46,
+   "title": "Lone Walker Before the Giant Wave ✨"
+  },
+  {
+   "slug": "black-eclipse-over-still-water",
+   "permalink": "https://www.threads.com/@wallspotterr/post/Df4C--nlazW",
+   "date": "2026-11-18",
+   "score": 3,
+   "likes": 1,
+   "replies": 1,
+   "reposts": 0,
+   "quotes": 0,
+   "views": 45,
+   "title": "Black Eclipse Over Still Water ✨"
   },
   {
    "slug": "neon-ripples",
@@ -203,7 +227,7 @@
    "replies": 1,
    "reposts": 0,
    "quotes": 0,
-   "views": 245,
+   "views": 247,
    "title": "Starlit Valley ✨"
   },
   {
@@ -217,30 +241,6 @@
    "quotes": 0,
    "views": 221,
    "title": "Neon Orbits ✨"
-  },
-  {
-   "slug": "neon-hex-gate",
-   "permalink": "https://www.threads.com/@wallspotterr/post/Dfl39odFTPi",
-   "date": "2026-11-11",
-   "score": 2,
-   "likes": 0,
-   "replies": 1,
-   "reposts": 0,
-   "quotes": 0,
-   "views": 214,
-   "title": "Neon Hex Gate ✨"
-  },
-  {
-   "slug": "minimal-mountains-dawn",
-   "permalink": "https://www.threads.com/@wallspotterr/post/Dfk4ak0EqoB",
-   "date": "2026-11-10",
-   "score": 2,
-   "likes": 0,
-   "replies": 1,
-   "reposts": 0,
-   "quotes": 0,
-   "views": 207,
-   "title": "Minimal Mountains – Dawn ✨"
   }
  ]
 }
