@@ -1,10 +1,10 @@
 name: Release scheduled wallpaper
 
-# Night slots, Istanbul time: 20:00, 22:00, 00:00, 02:00, 04:00 (UTC 17, 19, 21, 23, 01).
-# The :33 run is a fallback in case GitHub delays or skips the :03 run.
+# Each queue entry has its own time (data/queue.json). GitHub skips many scheduled runs,
+# so check every 15 minutes; a run releases at most one wallpaper that is already due.
 on:
   schedule:
-    - cron: "3,33 17,19,21,23,1 * * *"
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
