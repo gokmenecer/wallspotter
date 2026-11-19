@@ -4,6 +4,7 @@ Runs in GitHub Actions after the site is deployed (see .github/workflows/social.
 
   python scripts/social.py post      share every originals wallpaper not yet in data/social-posted.json;
                                      wallpapers listed in data/series.json go out together as one carousel
+  python scripts/social.py dailyreel-prepare / dailyreel-post   the 23:00 recap Reel of the day
   python scripts/social.py unpublish delete the posts of wallpapers removed from data/wallpapers.csv
   python scripts/social.py check     only test that the saved tokens still work
   python scripts/social.py refresh   renew the Threads token (it lasts 60 days) and save it again
@@ -27,6 +28,8 @@ SECRETS = ROOT / "data" / "social-secrets.enc"
 SERIES = ROOT / "data" / "series.json"
 HASHTAG_FILE = ROOT / "data" / "hashtags.json"   # optional {"<slug>": "#a #b #c #d #e"} written by the daily task
 FACEBOOK_ENABLED = False           # 2026-11-19: stopped (0 reactions in 100+ posts, inflated the stats with bot visits)
+DAILY = ROOT / "data" / "daily-reels.json"   # {"YYYY-MM-DD": {"slugs": [...], "status": "pending|posted|empty", ...}}
+DAILY_HOUR = 23                            # Istanbul time
 SAVE_NOTE = "📌 Save this so you can find it when it's time for a new wallpaper."
 THREADS_TOPIC = "Wallpaper"
 THREADS_TOPIC_2 = "4K Wallpaper"   # a reply under each Threads post carries this second topic
@@ -300,7 +303,7 @@ def share_single(sec, w, done):
     url = image_url(w, wide)
     wait_live(url)
     mock = mockup_url(w) or url        # the wallpaper on a phone / monitor
-    reel = None if wide else reel_url(w)  # phone: Instagram Reels video; desktop: monitor mockup photo
+    reel = None   # 2026-11-19: single wallpapers go to Instagram as the mockup photo; one daily recap Reel instead
     texts = captions(w, wide)
     ok = True
     for p in [p for p in PLATFORMS if p not in done]:
@@ -381,6 +384,88 @@ def cmd_post():
             continue
         failed |= not share_series(sec, sr, items, state)
         STATE.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n")
+    if failed:
+        sys.exit(1)
+
+
+def post_threads_video(sec, video_url, text):
+    tok = sec["threads_token"]
+    c = _th_create(tok, media_type="VIDEO", video_url=video_url, text=text)
+    for _ in range(60):
+        st = call("GET", f"{THREADS}/{c}", fields="status", access_token=tok).get("status")
+        if st == "FINISHED":
+            break
+        if st in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Threads could not process the video ({st})")
+        time.sleep(5)
+    return call("POST", f"{THREADS}/me/threads_publish", creation_id=c, access_token=tok)["id"]
+
+
+def istanbul_now():
+    from datetime import datetime, timedelta, timezone
+    return datetime.now(timezone(timedelta(hours=3)))
+
+
+def daily_items(day):
+    """Wallpapers added on this Istanbul day, in the order they were published."""
+    return [w for w in wallpapers() if w.get("date") == day]
+
+
+def cmd_dailyreel_prepare():
+    """From 23:00 Istanbul on, mark today's recap Reel as pending (runs until 03:00 for late GitHub runs)."""
+    from datetime import timedelta
+    now = istanbul_now()
+    day_dt = now if now.hour >= DAILY_HOUR else now - timedelta(days=1)
+    if now.hour >= DAILY_HOUR or now.hour < 3:
+        day = day_dt.strftime("%Y-%m-%d")
+    else:
+        print("not time yet"); return
+    state = json.loads(DAILY.read_text()) if DAILY.exists() else {}
+    if day in state:
+        print(f"{day}: already {state[day]['status']}"); return
+    items = daily_items(day)
+    state[day] = {"slugs": [w["slug"] for w in items], "status": "pending" if items else "empty"}
+    DAILY.write_text(json.dumps(state, indent=1) + "\n")
+    print(f"{day}: {len(items)} wallpapers -> {state[day]['status']}")
+    if items and os.environ.get("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write(f"day={day}\n")
+
+
+def daily_captions(n):
+    th = (f"Today's {n} new wallpapers ✨\n\nWhich one is your favorite? Tell me the number 👇"
+          f"\n\nFree full-res downloads 👉 wallspotter.com")
+    ig = (f"Today's {n} new wallpapers on WallSpotter ✨\n\nWhich one is your favorite? Tell me the number 👇\n\n"
+          f"Free full-resolution downloads at wallspotter.com (link in bio) 🖼️\n\n{SAVE_NOTE}\n\n")
+    return ig, th
+
+
+def cmd_dailyreel_post():
+    sec = load_secrets()
+    state = json.loads(DAILY.read_text()) if DAILY.exists() else {}
+    by_slug = {w["slug"]: w for w in wallpapers()}
+    failed = False
+    for day, d in sorted(state.items()):
+        if d.get("status") != "pending":
+            continue
+        url = f"{SITE}/assets/reels/daily-{day}.mp4"
+        wait_live(url)
+        items = [by_slug[s] for s in d["slugs"] if s in by_slug]
+        ig, th = daily_captions(len(items))
+        topic = hashtags(items, False).split()[1:4]   # topic tags of the day
+        ig += " ".join(["#wallpaper"] + [t for t in topic if t not in ("#lockscreen", "#wallpaper")][:3] + ["#aiart"])
+        for p, fn, text in (("instagram", post_instagram_reel, ig), ("threads", post_threads_video, th)):
+            if p in d:
+                continue
+            try:
+                d[p] = fn(sec, url, text)
+                print(f"daily reel {day}: shared on {p} ({d[p]})")
+            except Exception as e:
+                failed = True
+                print(f"::error::daily reel {day} on {p}: {e}")
+        if "instagram" in d and "threads" in d:
+            d["status"] = "posted"
+        DAILY.write_text(json.dumps(state, indent=1) + "\n")
     if failed:
         sys.exit(1)
 
@@ -512,4 +597,4 @@ def cmd_daily():
 
 
 if __name__ == "__main__":
-    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement, "unpublish": cmd_unpublish}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
+    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement, "unpublish": cmd_unpublish, "dailyreel-prepare": cmd_dailyreel_prepare, "dailyreel-post": cmd_dailyreel_post}[sys.argv[1] if len(sys.argv) > 1 else "post"]()

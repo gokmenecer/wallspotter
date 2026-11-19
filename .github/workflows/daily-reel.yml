@@ -1,0 +1,57 @@
+name: Daily recap Reel
+
+# Every day at 23:00 Istanbul (20:00 UTC) a Reel of the day's wallpapers goes to Instagram and Threads.
+# GitHub skips many scheduled runs, so try every 15 minutes until 02:45 Istanbul; a day is posted once.
+on:
+  schedule:
+    - cron: "4,19,34,49 20-23 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: daily-reel
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+
+      - name: Pick today's wallpapers
+        id: prep
+        run: python scripts/social.py dailyreel-prepare
+
+      - name: Save, build the video with the site, and share
+        if: steps.prep.outputs.day != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOCIAL_KEY: ${{ secrets.SOCIAL_KEY }}
+        run: |
+          git config user.name "wallspotter-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily-reels.json
+          git commit -m "Daily recap Reel: ${{ steps.prep.outputs.day }}"
+          for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 10; done
+          # a push made with GITHUB_TOKEN does not start other workflows: start the site build ourselves
+          gh workflow run deploy.yml --ref main
+          sleep 20
+          id=$(gh run list --workflow deploy.yml --event workflow_dispatch -L 1 --json databaseId -q '.[0].databaseId')
+          gh run watch "$id" --exit-status || { gh run rerun "$id" --failed; sleep 20; gh run watch "$id" --exit-status; }
+          python scripts/social.py dailyreel-post
+
+      - name: Save what was shared
+        if: always() && steps.prep.outputs.day != ''
+        run: |
+          git add data/daily-reels.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Daily recap Reel shared"
+            for i in 1 2 3; do git pull --rebase -q origin main && git push -q origin HEAD:main && break; sleep 10; done
+          fi

@@ -343,10 +343,26 @@ def make_media(walls):
         reel.parent.mkdir(parents=True, exist_ok=True)
         try:
             (media.desktop_mockup if w.get("wide") else media.phone_mockup)(src, mock)
-            if can_video and not w.get("wide"):  # desktop wallpapers go to Instagram as the monitor mockup
-                media.make_reel(src, reel, bool(w.get("wide")))
         except Exception as e:  # never break the site build over a social asset
             print(f"media for {w['slug']} failed: {e}")
+    # the 23:00 recap Reel of the day (data/daily-reels.json, status "pending")
+    daily_file = ROOT / "data" / "daily-reels.json"
+    daily = json.loads(daily_file.read_text()) if daily_file.exists() else {}
+    by_slug = {w["slug"]: w for w in walls}
+    for day, d in daily.items():
+        if d.get("status") != "pending" or not can_video:
+            continue
+        items = [(ROOT / "static" / by_slug[s]["image"].lstrip("/"), bool(by_slug[s].get("wide")))
+                 for s in d["slugs"] if s in by_slug]
+        if not items:
+            continue
+        dst = OUT / "assets" / "reels" / f"daily-{day}.mp4"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            media.make_daily_reel(items, dst, seed=int(day.replace("-", "")) % 997)
+            print(f"daily reel {day}: {len(items)} wallpapers")
+        except Exception as e:
+            print(f"daily reel {day} failed: {e}")
 
 
 # ---------- build ----------
