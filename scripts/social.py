@@ -300,7 +300,7 @@ def share_single(sec, w, done):
     url = image_url(w, wide)
     wait_live(url)
     mock = mockup_url(w) or url        # the wallpaper on a phone / monitor
-    reel = reel_url(w)                 # Instagram Reels video
+    reel = None if wide else reel_url(w)  # phone: Instagram Reels video; desktop: monitor mockup photo
     texts = captions(w, wide)
     ok = True
     for p in [p for p in PLATFORMS if p not in done]:

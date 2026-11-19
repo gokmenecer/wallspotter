@@ -343,7 +343,7 @@ def make_media(walls):
         reel.parent.mkdir(parents=True, exist_ok=True)
         try:
             (media.desktop_mockup if w.get("wide") else media.phone_mockup)(src, mock)
-            if can_video:
+            if can_video and not w.get("wide"):  # desktop wallpapers go to Instagram as the monitor mockup
                 media.make_reel(src, reel, bool(w.get("wide")))
         except Exception as e:  # never break the site build over a social asset
             print(f"media for {w['slug']} failed: {e}")
