@@ -27,6 +27,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pillow
+      - name: ffmpeg for Instagram Reels videos
+        run: which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core)
       - run: python build.py
       - uses: actions/upload-pages-artifact@v3
         with:

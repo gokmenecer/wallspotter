@@ -323,6 +323,32 @@ def make_social(walls):
         bg.save(dst, "JPEG", quality=90, optimize=True)
 
 
+def make_media(walls):
+    """Phone/monitor mockups and Instagram Reels videos, only for wallpapers that are
+    not yet shared on Instagram and Threads (see data/social-posted.json)."""
+    import shutil as _sh
+    import sys
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import media
+    state_file = ROOT / "data" / "social-posted.json"
+    state = json.loads(state_file.read_text()) if state_file.exists() else {}
+    pending = [w for w in walls if w["image"].startswith("/")
+               and not {"instagram", "threads"} <= set(state.get(w["slug"], {}))]
+    can_video = _sh.which("ffmpeg") is not None
+    for w in pending[:40]:
+        src = ROOT / "static" / w["image"].lstrip("/")
+        mock = OUT / "assets" / "mockup" / f"{w['slug']}.jpg"
+        reel = OUT / "assets" / "reels" / f"{w['slug']}.mp4"
+        mock.parent.mkdir(parents=True, exist_ok=True)
+        reel.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            (media.desktop_mockup if w.get("wide") else media.phone_mockup)(src, mock)
+            if can_video:
+                media.make_reel(src, reel, bool(w.get("wide")))
+        except Exception as e:  # never break the site build over a social asset
+            print(f"media for {w['slug']} failed: {e}")
+
+
 # ---------- build ----------
 def build():
     if OUT.exists():
@@ -331,6 +357,7 @@ def build():
     walls = load_wallpapers()
     make_thumbs(walls)
     make_social([w for w in walls if w["category"] == "originals"])
+    make_media([w for w in walls if w["category"] == "originals"])
     sitemap_urls = ["/"]
 
     # Home

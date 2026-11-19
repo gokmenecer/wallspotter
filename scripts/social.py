@@ -1,8 +1,9 @@
-"""Share new WallSpotter wallpapers on Facebook, Instagram and Threads.
+"""Share new WallSpotter wallpapers on Instagram and Threads (Facebook sharing is off).
 
 Runs in GitHub Actions after the site is deployed (see .github/workflows/social.yml).
 
-  python scripts/social.py post      share every originals wallpaper not yet in data/social-posted.json
+  python scripts/social.py post      share every originals wallpaper not yet in data/social-posted.json;
+                                     wallpapers listed in data/series.json go out together as one carousel
   python scripts/social.py unpublish delete the posts of wallpapers removed from data/wallpapers.csv
   python scripts/social.py check     only test that the saved tokens still work
   python scripts/social.py refresh   renew the Threads token (it lasts 60 days) and save it again
@@ -23,8 +24,10 @@ GRAPH = "https://graph.facebook.com/v24.0"
 THREADS = "https://graph.threads.net/v1.0"
 STATE = ROOT / "data" / "social-posted.json"
 SECRETS = ROOT / "data" / "social-secrets.enc"
-HASHTAGS = "#wallpaper #phonewallpaper #lockscreen #aiart #wallspotter"
-DESKTOP_TAGS = "#wallpaper #desktopwallpaper #4kwallpaper #aiart #wallspotter"
+SERIES = ROOT / "data" / "series.json"
+HASHTAG_FILE = ROOT / "data" / "hashtags.json"   # optional {"<slug>": "#a #b #c #d #e"} written by the daily task
+FACEBOOK_ENABLED = False           # 2026-11-19: stopped (0 reactions in 100+ posts, inflated the stats with bot visits)
+SAVE_NOTE = "📌 Save this so you can find it when it's time for a new wallpaper."
 THREADS_TOPIC = "Wallpaper"
 THREADS_TOPIC_2 = "4K Wallpaper"   # a reply under each Threads post carries this second topic
 REPLY_FROM = "2026-11-10"          # only wallpapers from this date on get that reply
@@ -90,14 +93,65 @@ def short(text, limit):
     return cut + "…"
 
 
+# topic word in title/description -> hashtag (first matches win; up to 3 per post)
+TOPIC_TAGS = [
+    (("neon",), "#neonwallpaper"), (("gradient",), "#gradientwallpaper"),
+    (("mountain", "peak", "valley", "hill"), "#mountainwallpaper"),
+    (("ocean", "sea", "wave", "tide", "water", "lake"), "#oceanwallpaper"),
+    (("sunset", "sunrise", "dawn", "dusk", "golden hour"), "#sunsetwallpaper"),
+    (("star", "galaxy", "space", "cosmic", "nebula", "planet", "moon", "eclipse", "black hole"), "#spacewallpaper"),
+    (("forest", "tree", "pine", "leaf", "leaves", "fern"), "#naturewallpaper"),
+    (("flower", "rose", "petal", "blossom", "bloom"), "#flowerwallpaper"),
+    (("rain", "drop", "glass", "frost"), "#rainwallpaper"),
+    (("desert", "dune", "sand"), "#desertwallpaper"),
+    (("minimal", "calm", "soft", "simple"), "#minimalwallpaper"),
+    (("abstract", "layer", "paint", "fluid", "liquid", "swirl"), "#abstractwallpaper"),
+    (("3d", "render", "sculpt", "stone", "marble", "metal"), "#3dwallpaper"),
+    (("dark", "night", "midnight", "shadow", "black"), "#darkwallpaper"),
+    (("blue",), "#bluewallpaper"), (("purple", "violet", "lavender"), "#purplewallpaper"),
+    (("pink", "rose"), "#pinkaesthetic"), (("orange", "amber", "ember", "fire"), "#orangeaesthetic"),
+    (("green", "emerald", "teal"), "#greenaesthetic"), (("aesthetic", "dreamy", "pastel"), "#aestheticwallpaper"),
+]
+
+
+def hashtags(items, wide):
+    """Five hashtags made for this post: format tag, up to three topic tags, #aiart."""
+    override = json.loads(HASHTAG_FILE.read_text()) if HASHTAG_FILE.exists() else {}
+    if len(items) == 1 and override.get(items[0]["slug"]):
+        return override[items[0]["slug"]]
+    text = " ".join(f"{w['title']} {w['description']}" for w in items).lower()
+    tags = ["#desktopwallpaper" if wide else "#iphonewallpaper"]
+    for words, tag in TOPIC_TAGS:
+        if len(tags) == 4:
+            break
+        if tag not in tags and any(wd in text for wd in words):
+            tags.append(tag)
+    for filler in ("#4kwallpaper" if wide else "#lockscreen", "#wallpaper", "#aestheticwallpaper"):
+        if len(tags) < 4 and filler not in tags:
+            tags.append(filler)
+    return " ".join(tags + ["#aiart"])
+
+
 def captions(w, wide):
     title, desc, link = w["title"], w["description"], f"wallspotter.com/{w['slug']}"
-    tags = DESKTOP_TAGS if wide else HASHTAGS
+    tags = hashtags([w], wide)
     fb = f"{title} ✨\n\n{desc}\n\nFree full-resolution download 👉 {SITE}/{w['slug']}/"
-    ig = f"{title} ✨\n\n{desc}\n\nFree full-resolution download at wallspotter.com (link in bio) 🖼️\n\n{tags}"
+    ig = f"{title} ✨\n\n{desc}\n\nFree full-resolution download at wallspotter.com (link in bio) 🖼️\n\n{SAVE_NOTE}\n\n{tags}"
     tail = f"\n\nFree full-res download 👉 {link}"
     th = f"{title} ✨\n\n" + short(desc, 500 - len(title) - len(tail) - 6) + tail
-    return fb, ig, th
+    return {"facebook": fb, "instagram": ig, "threads": th}
+
+
+def series_captions(series, items):
+    n, title, q = len(items), series["title"], series.get("question", "").strip()
+    intro = series.get("intro", "").strip()
+    head = f"{title} · {n} new wallpapers ✨"
+    tail = "\n\nFree full-res downloads 👉 wallspotter.com"
+    body = "\n\n".join(x for x in (intro, q) if x)
+    th = head + "\n\n" + short(body, 500 - len(head) - len(tail) - 4) + tail
+    ig = (f"{head}\n\n{body}\n\nSwipe to see all {n} → free full-resolution downloads at wallspotter.com "
+          f"(link in bio) 🖼️\n\n{SAVE_NOTE}\n\n{hashtags(items, False)}")
+    return {"instagram": ig, "threads": th}
 
 
 # ---------- platforms ----------
@@ -106,34 +160,85 @@ def post_facebook(sec, url, text):
     return r.get("post_id") or r["id"]
 
 
+def _ig_wait(tok, c, what, tries=60):
+    for _ in range(tries):
+        st = call("GET", f"{GRAPH}/{c}", fields="status_code", access_token=tok).get("status_code")
+        if st == "FINISHED":
+            return
+        if st == "ERROR":
+            raise RuntimeError(f"Instagram could not process the {what}")
+        time.sleep(5)
+    raise RuntimeError(f"Instagram is still processing the {what}")
+
+
+def _ig_publish(tok, c):
+    return call("POST", f"{GRAPH}/{IG_USER_ID}/media_publish", creation_id=c, access_token=tok)["id"]
+
+
 def post_instagram(sec, url, text):
     tok = sec["page_token"]
     c = call("POST", f"{GRAPH}/{IG_USER_ID}/media", image_url=url, caption=text, access_token=tok)["id"]
+    _ig_wait(tok, c, "image", 30)
+    return _ig_publish(tok, c)
+
+
+def post_instagram_reel(sec, video_url, text):
+    tok = sec["page_token"]
+    c = call("POST", f"{GRAPH}/{IG_USER_ID}/media", media_type="REELS", video_url=video_url, caption=text,
+             share_to_feed="true", access_token=tok)["id"]
+    _ig_wait(tok, c, "video")
+    return _ig_publish(tok, c)
+
+
+def post_instagram_carousel(sec, urls, text):
+    tok = sec["page_token"]
+    kids = []
+    for u in urls:
+        k = call("POST", f"{GRAPH}/{IG_USER_ID}/media", image_url=u, is_carousel_item="true", access_token=tok)["id"]
+        _ig_wait(tok, k, "carousel image", 30)
+        kids.append(k)
+    c = call("POST", f"{GRAPH}/{IG_USER_ID}/media", media_type="CAROUSEL", children=",".join(kids),
+             caption=text, access_token=tok)["id"]
+    _ig_wait(tok, c, "carousel", 30)
+    return _ig_publish(tok, c)
+
+
+def _th_wait(tok, c, what):
     for _ in range(30):
-        st = call("GET", f"{GRAPH}/{c}", fields="status_code", access_token=tok).get("status_code")
+        st = call("GET", f"{THREADS}/{c}", fields="status", access_token=tok).get("status")
         if st == "FINISHED":
-            break
-        if st == "ERROR":
-            raise RuntimeError("Instagram could not process the image")
+            return
+        if st in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"Threads could not process the {what} ({st})")
         time.sleep(5)
-    return call("POST", f"{GRAPH}/{IG_USER_ID}/media_publish", creation_id=c, access_token=tok)["id"]
+
+
+def _th_create(tok, **params):
+    """Create a Threads container in the "Wallpaper" topic (falls back to no topic)."""
+    try:
+        return call("POST", f"{THREADS}/me/threads", topic_tag=THREADS_TOPIC, access_token=tok, **params)["id"]
+    except RuntimeError as e:
+        print(f"::warning::Threads topic tag not accepted, posting without it: {e}")
+        return call("POST", f"{THREADS}/me/threads", access_token=tok, **params)["id"]
 
 
 def post_threads(sec, url, text):
     tok = sec["threads_token"]
-    try:  # put the post in the "Wallpaper" topic
-        c = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=url, text=text,
-                 topic_tag=THREADS_TOPIC, access_token=tok)["id"]
-    except RuntimeError as e:
-        print(f"::warning::Threads topic tag not accepted, posting without it: {e}")
-        c = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=url, text=text, access_token=tok)["id"]
-    for _ in range(30):
-        st = call("GET", f"{THREADS}/{c}", fields="status", access_token=tok).get("status")
-        if st == "FINISHED":
-            break
-        if st in ("ERROR", "EXPIRED"):
-            raise RuntimeError(f"Threads could not process the image ({st})")
-        time.sleep(5)
+    c = _th_create(tok, media_type="IMAGE", image_url=url, text=text)
+    _th_wait(tok, c, "image")
+    return call("POST", f"{THREADS}/me/threads_publish", creation_id=c, access_token=tok)["id"]
+
+
+def post_threads_carousel(sec, urls, text):
+    tok = sec["threads_token"]
+    kids = []
+    for u in urls:
+        k = call("POST", f"{THREADS}/me/threads", media_type="IMAGE", image_url=u, is_carousel_item="true",
+                 access_token=tok)["id"]
+        _th_wait(tok, k, "carousel image")
+        kids.append(k)
+    c = _th_create(tok, media_type="CAROUSEL", children=",".join(kids), text=text)
+    _th_wait(tok, c, "carousel")
     return call("POST", f"{THREADS}/me/threads_publish", creation_id=c, access_token=tok)["id"]
 
 
@@ -152,7 +257,7 @@ def post_threads_reply(sec, url, text, reply_to):
     return call("POST", f"{THREADS}/me/threads_publish", creation_id=c, access_token=tok)["id"]
 
 
-PLATFORMS = {"facebook": post_facebook, "instagram": post_instagram, "threads": post_threads}
+PLATFORMS = ["instagram", "threads"] + (["facebook"] if FACEBOOK_ENABLED else [])
 
 
 # ---------- commands ----------
@@ -168,36 +273,113 @@ def wait_live(url):
     raise RuntimeError(f"{url} is not online yet")
 
 
+def is_live(url):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=30) as r:
+            return r.status == 200
+    except urllib.error.URLError:
+        return False
+
+
+def mockup_url(w):
+    u = f"{SITE}/assets/mockup/{w['slug']}.jpg"
+    return u if is_live(u) else None
+
+
+def reel_url(w):
+    u = f"{SITE}/assets/reels/{w['slug']}.mp4"
+    return u if is_live(u) else None
+
+
+def load_series():
+    return json.loads(SERIES.read_text()) if SERIES.exists() else []
+
+
+def share_single(sec, w, done):
+    wide = is_wide(w)
+    url = image_url(w, wide)
+    wait_live(url)
+    mock = mockup_url(w) or url        # the wallpaper on a phone / monitor
+    reel = reel_url(w)                 # Instagram Reels video
+    texts = captions(w, wide)
+    ok = True
+    for p in [p for p in PLATFORMS if p not in done]:
+        try:
+            if p == "instagram":
+                done[p] = post_instagram_reel(sec, reel, texts[p]) if reel else post_instagram(sec, mock, texts[p])
+            elif p == "threads":
+                done[p] = post_threads(sec, mock, texts[p])
+            else:
+                done[p] = post_facebook(sec, url, texts[p])
+            print(f"{w['slug']}: shared on {p} ({done[p]}){' as reel' if p == 'instagram' and reel else ''}")
+        except Exception as e:  # keep going with the other platforms
+            ok = False
+            print(f"::error::{w['slug']} on {p}: {e}")
+    if "threads_4k" not in done and w.get("date", "") >= REPLY_FROM and "threads" in done:
+        text = f"Also in {THREADS_TOPIC_2} 🖼️ Free full-res download 👉 wallspotter.com/{w['slug']}"
+        try:  # the reply shows the plain full-size wallpaper
+            done["threads_4k"] = post_threads_reply(sec, url, text, done["threads"])
+            print(f"{w['slug']}: replied on threads in {THREADS_TOPIC_2} ({done['threads_4k']})")
+        except Exception as e:
+            print(f"::warning::{w['slug']} threads reply: {e}")
+    return ok
+
+
+def share_series(sec, series, items, state):
+    """One carousel per platform for the whole series; every slug gets the same post id."""
+    urls = []
+    for w in items:
+        wait_live(image_url(w, is_wide(w)))
+        urls.append(mockup_url(w) or image_url(w, is_wide(w)))
+    texts = series_captions(series, items)
+    first = state.setdefault(items[0]["slug"], {})
+    ok = True
+    for p, fn in (("instagram", post_instagram_carousel), ("threads", post_threads_carousel)):
+        if p in first:
+            continue
+        try:
+            pid = fn(sec, urls, texts[p])
+            for w in items:
+                state.setdefault(w["slug"], {})[p] = pid
+            print(f"series {series['id']}: shared on {p} as a {len(items)}-image carousel ({pid})")
+        except Exception as e:
+            ok = False
+            print(f"::error::series {series['id']} on {p}: {e}")
+    for w in items:
+        d = state.setdefault(w["slug"], {})
+        d["series"] = series["id"]
+        d["threads_4k"] = "series"   # no separate 4K reply for series
+        if not FACEBOOK_ENABLED:
+            d.setdefault("facebook", "off")
+    return ok
+
+
 def cmd_post():
     sec = load_secrets()
     state = json.loads(STATE.read_text()) if STATE.exists() else {}
+    walls = wallpapers()
+    by_slug = {w["slug"]: w for w in walls}
+    series_list = load_series()
+    in_series = {s for sr in series_list for s in sr.get("slugs", [])}
     failed = False
-    for w in wallpapers():
-        done = state.setdefault(w["slug"], {})
-        todo = [p for p in PLATFORMS if p not in done]
-        need_reply = "threads_4k" not in done and w.get("date", "") >= REPLY_FROM
-        if not todo and not need_reply:
+    for w in walls:
+        if w["slug"] in in_series:
             continue
-        wide = is_wide(w)
-        url = image_url(w, wide)
-        wait_live(url)
-        texts = dict(zip(PLATFORMS, captions(w, wide)))
-        for p in todo:
-            try:
-                done[p] = PLATFORMS[p](sec, url, texts[p])
-                print(f"{w['slug']}: shared on {p} ({done[p]})")
-            except Exception as e:  # keep going with the other platforms
-                failed = True
-                print(f"::error::{w['slug']} on {p}: {e}")
-        if need_reply and "threads" in done:
-            wide = is_wide(w)
-            url = image_url(w, wide)
-            text = f"Also in {THREADS_TOPIC_2} 🖼️ Free full-res download 👉 wallspotter.com/{w['slug']}"
-            try:
-                done["threads_4k"] = post_threads_reply(sec, url, text, done["threads"])
-                print(f"{w['slug']}: replied on threads in {THREADS_TOPIC_2} ({done['threads_4k']})")
-            except Exception as e:
-                print(f"::warning::{w['slug']} threads reply: {e}")
+        done = state.setdefault(w["slug"], {})
+        if not FACEBOOK_ENABLED:
+            done.setdefault("facebook", "off")   # never post the backlog when sharing is off
+        need_reply = "threads_4k" not in done and w.get("date", "") >= REPLY_FROM
+        if all(p in done for p in PLATFORMS) and not need_reply:
+            continue
+        failed |= not share_single(sec, w, done)
+        STATE.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n")
+    for sr in series_list:
+        items = [by_slug[s] for s in sr.get("slugs", []) if s in by_slug]
+        if len(items) != len(sr.get("slugs", [])) or not items:
+            continue   # not all images are on the site yet
+        if all({"instagram", "threads"} <= set(state.get(w["slug"], {})) for w in items):
+            continue
+        failed |= not share_series(sec, sr, items, state)
         STATE.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n")
     if failed:
         sys.exit(1)
