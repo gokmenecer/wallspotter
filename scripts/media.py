@@ -425,7 +425,7 @@ def _cover_frame(src, t_frac, W=1080, H=1920):
 def make_daily_reel(items, dst_path, seed=0, min_seconds=31, fade=0.6, end=3.5, fps=30):
     """items: list of (image_path, wide). A >= min_seconds vertical 1080x1920 video:
     phone wallpapers fill the screen with a slow zoom; desktop wallpapers appear on a monitor,
-    then full-screen with a slow pan. Numbered badges, crossfades, an end card and lo-fi music."""
+    then full-screen with a slow pan. Numbered badges, crossfades, an end card and synthwave-techno music (scripts/music.py)."""
     W, H = 1080, 1920
     srcs = []
     for p, wide in items:
@@ -471,7 +471,8 @@ def make_daily_reel(items, dst_path, seed=0, min_seconds=31, fade=0.6, end=3.5, 
 
     with tempfile.TemporaryDirectory() as tmp:
         wav = Path(tmp) / "music.wav"
-        lofi_track(wav, total + 0.2, seed)
+        import music  # scripts/music.py
+        music.make_track(wav, total + 0.2, "technowave", seed)  # 2026-11-19: synthwave + techno, 116 BPM
         cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
                "-r", str(fps), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(dst_path)]
