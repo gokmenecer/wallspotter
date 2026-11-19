@@ -322,3 +322,168 @@ def make_daily_reel(items, dst_path, seed=0, slide=2.2, fade=0.45, end=2.6, fps=
         proc.stdin.close()
         if proc.wait() != 0:
             raise RuntimeError("ffmpeg failed")
+
+
+def lofi_track(path, seconds, seed=0, sr=44100):
+    """Chill lo-fi beat (our own, royalty-free): electric-piano chords, soft drums, bass, vinyl crackle."""
+    import wave
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    bpm = [72, 76, 80, 84][seed % 4]
+    beat = 60.0 / bpm
+    n = int(seconds * sr)
+    out = np.zeros((n, 2))
+    hz = lambda m: 440.0 * 2 ** ((m - 69) / 12)
+    key = [0, 2, 3, 5, 7, 9][(seed // 4) % 6]
+    progs = [  # (root offset, chord intervals) – jazzy 7th/9th chords
+        [(2, [0, 3, 7, 10, 14]), (7, [0, 4, 7, 10, 14]), (0, [0, 4, 7, 11, 14]), (9, [0, 3, 7, 10, 14])],
+        [(0, [0, 4, 7, 11, 14]), (9, [0, 3, 7, 10, 14]), (5, [0, 4, 7, 11, 14]), (7, [0, 4, 7, 10, 13])],
+        [(9, [0, 3, 7, 10, 14]), (5, [0, 4, 7, 11, 14]), (0, [0, 4, 7, 11, 14]), (7, [0, 5, 7, 10, 14])],
+    ]
+    prog = progs[seed % len(progs)]
+    base = 48 + key  # C3 + key
+
+    def add(sig, start, gain=1.0, pan=0.5):
+        a = int(start * sr)
+        if a >= n:
+            return
+        b = min(n, a + len(sig))
+        out[a:b, 0] += sig[:b - a] * gain * (1 - pan) * 2
+        out[a:b, 1] += sig[:b - a] * gain * pan * 2
+
+    def epiano(f, dur):
+        t = np.arange(int(dur * sr)) / sr
+        s = sum(np.sin(2 * np.pi * f * k * t) * np.exp(-t * (1.2 + 1.8 * k)) / k ** 1.4 for k in range(1, 5))
+        s *= np.minimum(1, t / 0.008) * (1 + 0.12 * np.sin(2 * np.pi * 4.5 * t))  # attack + tremolo
+        return s
+
+    bar = 4 * beat
+    bars = int(seconds / bar) + 1
+    for i in range(bars):
+        t0 = i * bar
+        root, ivs = prog[i % len(prog)]
+        # chords: on beat 1 and a softer push on the "and" of 3
+        for when, g in ((0, 1.0), (2.5 * beat, 0.55)):
+            for j, iv in enumerate(ivs):
+                add(epiano(hz(base + root + iv), bar), t0 + when + j * 0.012, 0.075 * g, 0.35 + 0.08 * j)
+        # bass
+        for when in (0, 1.75 * beat, 2.5 * beat):
+            d = 0.9 * beat
+            tt = np.arange(int(d * sr)) / sr
+            f = hz(base - 12 + root)
+            add(np.sin(2 * np.pi * f * tt) * np.exp(-tt * 3) * np.minimum(1, tt / 0.01), t0 + when, 0.22)
+        # drums (skip in the first bar as an intro)
+        if i == 0:
+            continue
+        for k in (0, 2.5):          # kick
+            tt = np.arange(int(0.4 * sr)) / sr
+            ph = 2 * np.pi * np.cumsum(45 + 75 * np.exp(-tt * 30)) / sr
+            add(np.sin(ph) * np.exp(-tt * 9), t0 + k * beat, 0.45)
+        for k in (1, 3):            # snare / rim
+            tt = np.arange(int(0.25 * sr)) / sr
+            nz = rng.standard_normal(len(tt))
+            nz = nz - np.convolve(nz, np.ones(6) / 6, "same")
+            add((nz * 0.6 + np.sin(2 * np.pi * 190 * tt) * 0.4) * np.exp(-tt * 18), t0 + k * beat, 0.16)
+        for k in range(8):          # swung hi-hats
+            tt = np.arange(int(0.06 * sr)) / sr
+            nz = rng.standard_normal(len(tt))
+            nz = np.diff(nz, prepend=0)
+            when = k * beat / 2 + (0.06 * beat if k % 2 else 0)
+            add(nz * np.exp(-tt * 70), t0 + when, 0.035 * (1.0 if k % 2 == 0 else 0.7), 0.6)
+    # vinyl crackle + soft noise bed
+    crack = np.zeros(n)
+    idx = rng.integers(0, n, int(seconds * 9))
+    crack[idx] = rng.uniform(-1, 1, len(idx))
+    out += (crack * 0.05 + rng.standard_normal(n) * 0.0025)[:, None]
+    # warm low-pass (one-pole), gentle tape wobble omitted for simplicity
+    alpha = 0.32
+    for c in (0, 1):
+        x = out[:, c]
+        y = np.empty_like(x)
+        acc = 0.0
+        # vectorised one-pole via lfilter-like recursion in chunks
+        from itertools import accumulate
+        y = np.fromiter(accumulate(x, lambda p, v: p + alpha * (v - p)), float, len(x))
+        out[:, c] = y
+    t = np.arange(n) / sr
+    fade = np.clip(np.minimum(t / 1.2, (seconds - t) / 2.0), 0, 1)[:, None]
+    out *= fade
+    out = np.tanh(out / (np.abs(out).max() + 1e-9) * 1.6) * 0.55
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(2); w.setsampwidth(2); w.setframerate(sr)
+        w.writeframes((out * 32767).astype("<i2").tobytes())
+
+
+def _cover_frame(src, t_frac, W=1080, H=1920):
+    """Full-screen slow horizontal pan across a wide image (t_frac 0..1)."""
+    s = H / src.height
+    big_w = round(src.width * s)
+    x = (big_w - W) * (0.2 + 0.6 * t_frac) / s
+    return src.resize((W, H), Image.BICUBIC, box=(x, 0, x + W / s, src.height))
+
+
+def make_daily_reel(items, dst_path, seed=0, min_seconds=31, fade=0.6, end=3.5, fps=30):
+    """items: list of (image_path, wide). A >= min_seconds vertical 1080x1920 video:
+    phone wallpapers fill the screen with a slow zoom; desktop wallpapers appear on a monitor,
+    then full-screen with a slow pan. Numbered badges, crossfades, an end card and lo-fi music."""
+    W, H = 1080, 1920
+    srcs = []
+    for p, wide in items:
+        with Image.open(p) as im:
+            srcs.append((im.convert("RGB"), wide))
+    n = len(srcs)
+    # each wallpaper gets the same share of the time; desktop ones split it into two shots
+    per = max(3.2, (min_seconds - end + fade * n) / n)
+    shots = []   # (kind, image, number, duration)
+    for i, (s, wide) in enumerate(srcs):
+        if wide:
+            shots.append(("still", _recap_slide(s, True, i + 1, n), per * 0.5 + fade / 2))
+            shots.append(("pan", (s, i + 1), per * 0.5 + fade / 2))
+        else:
+            shots.append(("still", _recap_slide(s, False, i + 1, n), per))
+    shots.append(("still", _recap_end(srcs[0][0]), end))
+    starts, acc = [], 0.0
+    for _, _, d in shots:
+        starts.append(acc)
+        acc += d - fade
+    total = acc + fade
+    frames = int(total * fps)
+    badge_font = _font(46)
+
+    def badge(img, num):
+        d = ImageDraw.Draw(img, "RGBA")
+        label = f"{num}/{n}"
+        tw = d.textlength(label, font=badge_font)
+        d.rounded_rectangle((48, 70, 48 + tw + 44, 142), radius=36, fill=(0, 0, 0, 120))
+        d.text((70, 80), label, font=badge_font, fill=(255, 255, 255, 240))
+        return img
+
+    def frame_of(i, t_local):
+        kind, obj, dur = shots[i]
+        f = max(0.0, min(1.0, t_local / dur))
+        if kind == "pan":
+            src, num = obj
+            return badge(_cover_frame(src, f), num)
+        z = 1.0 + 0.08 * f if i % 2 == 0 else 1.08 - 0.08 * f   # alternate zoom in / out
+        cw, ch = W / z, H / z
+        x0, y0 = (W - cw) / 2, (H - ch) / 2
+        return obj.resize((W, H), Image.BICUBIC, box=(x0, y0, x0 + cw, y0 + ch))
+
+    with tempfile.TemporaryDirectory() as tmp:
+        wav = Path(tmp) / "music.wav"
+        lofi_track(wav, total + 0.2, seed)
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
+               "-r", str(fps), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "veryfast", "-crf", "21",
+               "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(dst_path)]
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+        for k in range(frames):
+            t = k / fps
+            act = [i for i in range(len(shots)) if starts[i] <= t < starts[i] + shots[i][2]]
+            img = frame_of(act[0], t - starts[act[0]])
+            if len(act) > 1:
+                nxt = act[1]
+                img = Image.blend(img, frame_of(nxt, t - starts[nxt]), max(0.0, min(1.0, (t - starts[nxt]) / fade)))
+            proc.stdin.write(img.tobytes())
+        proc.stdin.close()
+        if proc.wait() != 0:
+            raise RuntimeError("ffmpeg failed")
