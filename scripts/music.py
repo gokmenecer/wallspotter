@@ -3,7 +3,7 @@
     make_track(path, seconds, style="house", seed=0)   -> 44.1 kHz stereo 16-bit WAV
 
 Styles: "house" (chill house, 120 BPM), "futurepop" (pumping future-pop, 100 BPM),
-"synthwave" (retro driving synthwave, 108 BPM). The seed picks the key and the chord progression.
+"synthwave" (retro driving synthwave, 108 BPM), "technowave" (synthwave + techno, 124 BPM). The seed picks the key and the chord progression.
 """
 import wave
 
@@ -129,7 +129,7 @@ def make_track(path, seconds, style="house", seed=0):
     np.random.seed(seed)
     key = [0, 2, 5, 7, 9, 10][seed % 6]
     prog = PROGRESSIONS[(seed // 6) % len(PROGRESSIONS)]
-    bpm = {"house": 120, "futurepop": 100, "synthwave": 108}[style]
+    bpm = {"house": 120, "futurepop": 100, "synthwave": 108, "technowave": 124}[style]
     beat = 60 / bpm
     bar = 4 * beat
     mix = _Mix(seconds)
@@ -189,6 +189,48 @@ def make_track(path, seconds, style="house", seed=0):
                 mix.add("music", _filt(pl, "low", 5000), t0 + j * beat / 4, 0.09, 0.3 + 0.4 * (j % 2))
             bs = _saw(hz(root - 12), bar, max_h=6)
             mix.add("music", _filt(bs, "low", 500) * _env(bar, 0.01, 0.4, 0.9, 0.1), t0, 0.22)
+        elif style == "technowave":
+            # synthwave colours on a techno skeleton; bars 7-8 are a breakdown, then the drop
+            breakdown = i in (7, 8)
+            # filter LFO over 8 bars for the rolling bass (opens up towards the drop)
+            sweep = 0.5 - 0.5 * np.cos(2 * np.pi * (i % 8) / 8)
+            if not intro and not breakdown:
+                for b in range(4):
+                    mix.add("drums", _kick(0.42, 1.3), t0 + b * beat, 1.0); kicks.append(t0 + b * beat)
+                    mix.add("drums", _hat(True), t0 + b * beat + beat / 2, 0.09, 0.62)
+                for b in (1, 3):
+                    mix.add("drums", _reverb(_snare(0.35) * 0.6 + _clap() [:len(_t(0.35))] * 0.8, 1.5, 0.35, seed), t0 + b * beat, 0.42)
+            if not intro:
+                for j in range(16):   # 16th hats with accents
+                    mix.add("drums", _hat(), t0 + j * beat / 4, 0.05 if j % 4 == 2 else 0.022, 0.42)
+                if i % 2 == 1 and not breakdown:   # little perc fill
+                    for j in (13, 14, 15):
+                        mix.add("drums", _filt(_noise(0.08), "band", [400, 1800]) * np.exp(-_t(0.08) * 50),
+                                t0 + j * beat / 4, 0.12, 0.7)
+            # rolling 16th bass, skipping the downbeat of each beat (leaves room for the kick)
+            if not breakdown:
+                cut = 350 + 1900 * sweep
+                for j in range(16):
+                    if j % 4 == 0:
+                        continue
+                    m = root - 12 + (12 if j % 8 == 7 else 0)
+                    d = beat / 4 * 0.85
+                    bs = _filt(_saw(hz(m), d, max_h=18), "low", cut, 2) * _env(d, 0.002, 0.07, 0.35, 0.015)
+                    mix.add("music", bs, t0 + j * beat / 4, 0.36)
+            # warm synthwave pad (louder in the breakdown)
+            pad = sum(_saw(hz(m + 12), bar, detune=0.5) + _saw(hz(m + 12), bar, detune=-0.5) for m in notes)
+            mix.add("music", _filt(pad, "low", 2200 if breakdown else 1600) * _env(bar, 0.25, 1.2, 0.8, 0.25), t0,
+                    0.07 if breakdown else 0.04)
+            # square arpeggio, 16ths (up-down), panned left/right
+            seq = notes + notes[-2:0:-1]
+            for j in range(16):
+                m = seq[j % len(seq)] + 24
+                ar = _square(hz(m), beat / 4 * 0.85) * _env(beat / 4 * 0.85, 0.002, 0.05, 0.25, 0.02)
+                mix.add("music", _filt(ar, "low", 3000 + 2500 * sweep), t0 + j * beat / 4, 0.05, 0.25 + 0.5 * (j % 2))
+            if i == 8:   # riser into the drop
+                rt = _t(bar)
+                riser = _filt(_noise(bar), "band", [800, 6000]) * (rt / bar) ** 2
+                mix.add("fx", riser, t0, 0.12)
         else:  # synthwave
             if not intro:
                 for k in (0, 2):
@@ -212,7 +254,7 @@ def make_track(path, seconds, style="house", seed=0):
                 mix.add("music", _filt(ar, "low", 4200), t0 + j * beat / 4, 0.05, 0.25 + 0.5 * (j % 2))
 
     # sidechain: duck the music under each kick (strong for future pop)
-    depth = {"house": 0.55, "futurepop": 0.8, "synthwave": 0.35}[style]
+    depth = {"house": 0.55, "futurepop": 0.8, "synthwave": 0.35, "technowave": 0.6}[style]
     sc = np.ones(mix.n)
     t_rel = np.arange(int(0.35 * SR)) / SR
     curve = 1 - depth * np.exp(-t_rel * 9)
@@ -223,7 +265,7 @@ def make_track(path, seconds, style="house", seed=0):
     music = mix.bus["music"] * sc[:, None]
     music[:, 0] = _reverb(music[:, 0], 1.4, 0.18, seed)
     music[:, 1] = _reverb(music[:, 1], 1.4, 0.18, seed + 1)
-    out = mix.bus["drums"] * 0.9 + music
+    out = mix.bus["drums"] * 0.9 + music + mix.bus["fx"]
     t = np.arange(mix.n) / SR
     fade = np.clip(np.minimum(t / 0.4, (seconds - t) / 2.0), 0, 1)[:, None]
     out = out * fade
