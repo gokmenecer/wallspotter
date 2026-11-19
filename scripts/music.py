@@ -3,7 +3,7 @@
     make_track(path, seconds, style="house", seed=0)   -> 44.1 kHz stereo 16-bit WAV
 
 Styles: "house" (chill house, 120 BPM), "futurepop" (pumping future-pop, 100 BPM),
-"synthwave" (retro driving synthwave, 108 BPM), "technowave" (synthwave + techno, 124 BPM). The seed picks the key and the chord progression.
+"synthwave" (retro driving synthwave, 108 BPM), "technowave" (synthwave + techno, 116 BPM). The seed picks the key and the chord progression.
 """
 import wave
 
@@ -129,7 +129,7 @@ def make_track(path, seconds, style="house", seed=0):
     np.random.seed(seed)
     key = [0, 2, 5, 7, 9, 10][seed % 6]
     prog = PROGRESSIONS[(seed // 6) % len(PROGRESSIONS)]
-    bpm = {"house": 120, "futurepop": 100, "synthwave": 108, "technowave": 124}[style]
+    bpm = {"house": 120, "futurepop": 100, "synthwave": 108, "technowave": 116}[style]
     beat = 60 / bpm
     bar = 4 * beat
     mix = _Mix(seconds)
