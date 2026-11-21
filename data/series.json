@@ -12,5 +12,19 @@
     ],
     "intro": "Five silky veils of soft color, from blush pink to midnight blue.",
     "question": "Which color is yours: I, II, III, IV or V?"
+  },
+  {
+    "id": "dotted-currents-2026-11-21",
+    "title": "Dotted Currents",
+    "date": "2026-11-21",
+    "slugs": [
+      "dotted-currents-i",
+      "dotted-currents-ii",
+      "dotted-currents-iii",
+      "dotted-currents-iv",
+      "dotted-currents-v"
+    ],
+    "intro": "Five soft paper currents with tiny embossed dots, from sunrise coral to midnight blue.",
+    "question": "Warm or cool: which side are you on, I, II, III, IV or V?"
   }
 ]
