@@ -4,7 +4,7 @@ Runs in GitHub Actions after the site is deployed (see .github/workflows/social.
 
   python scripts/social.py post      share every originals wallpaper not yet in data/social-posted.json;
                                      wallpapers listed in data/series.json go out together as one carousel
-  python scripts/social.py dailyreel-prepare / dailyreel-post   the 23:00 recap Reel of the day
+  python scripts/social.py dailyreel-prepare / dailyreel-post   the 23:00 recap Reel of the day (dailyreel-due: is it still owed?)
   python scripts/social.py unpublish delete the posts of wallpapers removed from data/wallpapers.csv
   python scripts/social.py check     only test that the saved tokens still work
   python scripts/social.py refresh   renew the Threads token (it lasts 60 days) and save it again
@@ -411,31 +411,58 @@ def daily_items(day):
     return [w for w in wallpapers() if w.get("date") == day]
 
 
-def cmd_dailyreel_prepare():
-    """From 23:00 Istanbul on, mark today's recap Reel as pending (runs until 03:00 for late GitHub runs)."""
+DAILY_MAX_TRIES = 3   # a day whose Reel keeps failing is not retried forever
+
+
+def reel_day():
+    """The Istanbul day whose recap Reel is due: today from 23:00 on, otherwise yesterday.
+    GitHub often skips scheduled runs, so a missed night is caught up the next day.
+    DAILY_DAY=YYYY-MM-DD (manual run input) picks a day by hand."""
     from datetime import timedelta
+    manual = os.environ.get("DAILY_DAY", "").strip()
+    if manual:
+        return manual
     now = istanbul_now()
-    day_dt = now if now.hour >= DAILY_HOUR else now - timedelta(days=1)
-    if now.hour >= DAILY_HOUR or now.hour < 3:
-        day = day_dt.strftime("%Y-%m-%d")
-    else:
-        print("not time yet"); return
+    return (now if now.hour >= DAILY_HOUR else now - timedelta(days=1)).strftime("%Y-%m-%d")
+
+
+def reel_due(state, day):
+    d = state.get(day)
+    if d is None:
+        return bool(daily_items(day))
+    return d.get("status") == "pending" and d.get("tries", 0) < DAILY_MAX_TRIES
+
+
+def cmd_dailyreel_due():
+    """Exit 0 when the recap Reel of reel_day() still has to be made (used by the 15-minute queue check)."""
     state = json.loads(DAILY.read_text()) if DAILY.exists() else {}
-    if day in state:
-        print(f"{day}: already {state[day]['status']}"); return
-    items = daily_items(day)
-    state[day] = {"slugs": [w["slug"] for w in items], "status": "pending" if items else "empty"}
+    day = reel_day()
+    due = reel_due(state, day)
+    print(f"{day}: {'due' if due else 'nothing to do'}")
+    sys.exit(0 if due else 1)
+
+
+def cmd_dailyreel_prepare():
+    """Mark the recap Reel of reel_day() as pending (or retry one still pending) and hand the day to the workflow."""
+    day = reel_day()
+    state = json.loads(DAILY.read_text()) if DAILY.exists() else {}
+    if not reel_due(state, day):
+        print(f"{day}: {state.get(day, {}).get('status', 'no wallpapers')}, nothing to do"); return
+    if day not in state:
+        items = daily_items(day)
+        state[day] = {"slugs": [w["slug"] for w in items], "status": "pending"}
+    state[day]["tries"] = state[day].get("tries", 0) + 1
     DAILY.write_text(json.dumps(state, indent=1) + "\n")
-    print(f"{day}: {len(items)} wallpapers -> {state[day]['status']}")
-    if items and os.environ.get("GITHUB_OUTPUT"):
+    print(f"{day}: {len(state[day]['slugs'])} wallpapers -> pending (try {state[day]['tries']})")
+    if os.environ.get("GITHUB_OUTPUT"):
         with open(os.environ["GITHUB_OUTPUT"], "a") as f:
             f.write(f"day={day}\n")
 
 
-def daily_captions(n):
-    th = (f"Today's {n} new wallpapers ✨\n\nWhich one is your favorite? Tell me the number 👇"
+def daily_captions(n, when="Today's"):
+    th = (f"{when} {n} new wallpapers ✨\n\nWhich one is your favorite? Tell me the number 👇"
           f"\n\nFree full-res downloads 👉 wallspotter.com")
-    ig = (f"Today's {n} new wallpapers on WallSpotter ✨\n\nWhich one is your favorite? Tell me the number 👇\n\n"
+    ig = (f"{when} {n} new wallpapers on WallSpotter ✨\n\nWhich one is your favorite? Tell me the number 👇\n\n"
           f"Free full-resolution downloads at wallspotter.com (link in bio) 🖼️\n\n{SAVE_NOTE}\n\n")
     return ig, th
 
@@ -451,7 +478,9 @@ def cmd_dailyreel_post():
         url = f"{SITE}/assets/reels/daily-{day}.mp4"
         wait_live(url)
         items = [by_slug[s] for s in d["slugs"] if s in by_slug]
-        ig, th = daily_captions(len(items))
+        now = istanbul_now()
+        late = day != now.strftime("%Y-%m-%d") and now.hour >= 3   # caught up the next day
+        ig, th = daily_captions(len(items), "Yesterday's" if late else "Today's")
         topic = hashtags(items, False).split()[1:4]   # topic tags of the day
         ig += " ".join(["#wallpaper"] + [t for t in topic if t not in ("#lockscreen", "#wallpaper")][:3] + ["#aiart"])
         for p, fn, text in (("instagram", post_instagram_reel, ig), ("threads", post_threads_video, th)):
@@ -597,4 +626,4 @@ def cmd_daily():
 
 
 if __name__ == "__main__":
-    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement, "unpublish": cmd_unpublish, "dailyreel-prepare": cmd_dailyreel_prepare, "dailyreel-post": cmd_dailyreel_post}[sys.argv[1] if len(sys.argv) > 1 else "post"]()
+    {"post": cmd_post, "check": cmd_check, "refresh": cmd_refresh, "stats": cmd_stats, "daily": cmd_daily, "engagement": cmd_engagement, "unpublish": cmd_unpublish, "dailyreel-prepare": cmd_dailyreel_prepare, "dailyreel-due": cmd_dailyreel_due, "dailyreel-post": cmd_dailyreel_post}[sys.argv[1] if len(sys.argv) > 1 else "post"]()

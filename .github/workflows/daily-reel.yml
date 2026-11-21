@@ -1,11 +1,18 @@
 name: Daily recap Reel
 
 # Every day at 23:00 Istanbul (20:00 UTC) a Reel of the day's wallpapers goes to Instagram and Threads.
-# GitHub skips many scheduled runs, so try every 15 minutes until 02:45 Istanbul; a day is posted once.
+# GitHub skips many scheduled runs, so this also runs hourly, and the 15-minute "Release scheduled wallpaper"
+# check starts it whenever a Reel is still owed. A missed night is caught up the next day; a day is posted once.
 on:
   schedule:
     - cron: "4,19,34,49 20-23 * * *"
+    - cron: "27 * * * *"
   workflow_dispatch:
+    inputs:
+      day:
+        description: "Day to post (YYYY-MM-DD); empty = the day that is due"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -25,8 +32,10 @@ jobs:
           python-version: "3.12"
       - run: pip install pillow
 
-      - name: Pick today's wallpapers
+      - name: Pick the day's wallpapers
         id: prep
+        env:
+          DAILY_DAY: ${{ inputs.day }}
         run: python scripts/social.py dailyreel-prepare
 
       - name: Save, build the video with the site, and share

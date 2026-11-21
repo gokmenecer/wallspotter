@@ -46,3 +46,14 @@ jobs:
           id=$(gh run list --workflow deploy.yml --event workflow_dispatch -L 1 --json databaseId -q '.[0].databaseId')
           gh run watch "$id" --exit-status || { gh run rerun "$id" --failed; sleep 20; gh run watch "$id" --exit-status; }
           gh workflow run social.yml --ref main -f mode=post
+
+      # GitHub skips many scheduled runs of the recap Reel workflow; this check runs every
+      # 15 minutes anyway, so start the Reel from here whenever one is still owed.
+      - name: Start the daily recap Reel if it is due
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if python3 scripts/social.py dailyreel-due; then
+            busy=$(gh run list --workflow daily-reel.yml -L 5 --json status -q '[.[] | select(.status != "completed")] | length')
+            if [ "$busy" = "0" ]; then gh workflow run daily-reel.yml --ref main; else echo "recap Reel already running"; fi
+          fi
