@@ -26,5 +26,19 @@
     ],
     "intro": "Five soft paper currents with tiny embossed dots, from sunrise coral to midnight blue.",
     "question": "Warm or cool: which side are you on, I, II, III, IV or V?"
+  },
+  {
+    "id": "quiet-ripples-2026-11-22",
+    "title": "Quiet Ripples",
+    "date": "2026-11-22",
+    "slugs": [
+      "quiet-ripples-i",
+      "quiet-ripples-ii",
+      "quiet-ripples-iii",
+      "quiet-ripples-iv",
+      "quiet-ripples-v"
+    ],
+    "intro": "Five calm water scenes, one floating petal, from peach sunrise to moonlit midnight.",
+    "question": "Which ripple matches your mood today: I, II, III, IV or V?"
   }
 ]
