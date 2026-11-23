@@ -40,5 +40,19 @@
     ],
     "intro": "Five calm water scenes, one floating petal, from peach sunrise to moonlit midnight.",
     "question": "Which ripple matches your mood today: I, II, III, IV or V?"
+  },
+  {
+    "id": "glow-frames-2026-11-23",
+    "title": "Glow Frames",
+    "date": "2026-11-23",
+    "slugs": [
+      "glow-frames-i",
+      "glow-frames-ii",
+      "glow-frames-iii",
+      "glow-frames-iv",
+      "glow-frames-v"
+    ],
+    "intro": "Five soft glowing frames over silky waves, from coral sunrise to midnight blue.",
+    "question": "Which glow fits your screen: I, II, III, IV or V?"
   }
 ]
