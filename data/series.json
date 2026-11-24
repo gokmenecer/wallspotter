@@ -54,5 +54,19 @@
     ],
     "intro": "Five soft glowing frames over silky waves, from coral sunrise to midnight blue.",
     "question": "Which glow fits your screen: I, II, III, IV or V?"
+  },
+  {
+    "id": "quiet-horizons-2026-11-24",
+    "title": "Quiet Horizons",
+    "date": "2026-11-24",
+    "slugs": [
+      "quiet-horizons-i",
+      "quiet-horizons-ii",
+      "quiet-horizons-iii",
+      "quiet-horizons-iv",
+      "quiet-horizons-v"
+    ],
+    "intro": "Five calm hilltop scenes with one lone tree, from peach sunrise to moonlit midnight.",
+    "question": "Morning or night: which horizon is yours, I, II, III, IV or V?"
   }
 ]
