@@ -68,5 +68,19 @@
     ],
     "intro": "Five calm hilltop scenes with one lone tree, from peach sunrise to moonlit midnight.",
     "question": "Morning or night: which horizon is yours, I, II, III, IV or V?"
+  },
+  {
+    "id": "soft-bokeh-2026-11-25",
+    "title": "Soft Bokeh",
+    "date": "2026-11-25",
+    "slugs": [
+      "soft-bokeh-i",
+      "soft-bokeh-ii",
+      "soft-bokeh-iii",
+      "soft-bokeh-iv",
+      "soft-bokeh-v"
+    ],
+    "intro": "Five dreamy bokeh glows, from dawn peach to midnight blue.",
+    "question": "Which glow would you wake up to: I, II, III, IV or V?"
   }
 ]
