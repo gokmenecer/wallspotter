@@ -82,5 +82,19 @@
     ],
     "intro": "Five dreamy bokeh glows, from dawn peach to midnight blue.",
     "question": "Which glow would you wake up to: I, II, III, IV or V?"
+  },
+  {
+    "id": "silk-gradients-2026-11-26",
+    "title": "Silk Gradients",
+    "date": "2026-11-26",
+    "slugs": [
+      "silk-gradients-i",
+      "silk-gradients-ii",
+      "silk-gradients-iii",
+      "silk-gradients-iv",
+      "silk-gradients-v"
+    ],
+    "intro": "Five calm silk gradients, from teal and violet to golden plum.",
+    "question": "Which silk would you wear on your lock screen: I, II, III, IV or V?"
   }
 ]
