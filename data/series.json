@@ -96,5 +96,19 @@
     ],
     "intro": "Five calm silk gradients, from teal and violet to golden plum.",
     "question": "Which silk would you wear on your lock screen: I, II, III, IV or V?"
+  },
+  {
+    "id": "glass-petals-2026-11-27",
+    "title": "Glass Petals",
+    "date": "2026-11-27",
+    "slugs": [
+      "glass-petals-i",
+      "glass-petals-ii",
+      "glass-petals-iii",
+      "glass-petals-iv",
+      "glass-petals-v"
+    ],
+    "intro": "Five frosted-glass blooms, from dawn peach to midnight blue.",
+    "question": "Which bloom matches your mood today: I, II, III, IV or V?"
   }
 ]
