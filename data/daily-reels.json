@@ -115,5 +115,16 @@
   "tries": 1,
   "instagram": "17909009676605991",
   "threads": "18014126031005899"
+ },
+ "2026-11-27": {
+  "slugs": [
+   "glass-petals-v",
+   "glass-petals-iv",
+   "glass-petals-iii",
+   "glass-petals-ii",
+   "glass-petals-i"
+  ],
+  "status": "pending",
+  "tries": 1
  }
 }
