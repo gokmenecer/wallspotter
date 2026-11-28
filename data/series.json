@@ -110,5 +110,19 @@
     ],
     "intro": "Five frosted-glass blooms, from dawn peach to midnight blue.",
     "question": "Which bloom matches your mood today: I, II, III, IV or V?"
+  },
+  {
+    "id": "charcoal-reliefs-2026-11-28",
+    "title": "Charcoal Reliefs",
+    "date": "2026-11-28",
+    "slugs": [
+      "charcoal-reliefs-i",
+      "charcoal-reliefs-ii",
+      "charcoal-reliefs-iii",
+      "charcoal-reliefs-iv",
+      "charcoal-reliefs-v"
+    ],
+    "intro": "Five dark paper-and-plaster landscapes, each lit by a single glow: ember, moonlight, teal, sunset and amber.",
+    "question": "Which glow should light up your lock screen: I, II, III, IV or V?"
   }
 ]
